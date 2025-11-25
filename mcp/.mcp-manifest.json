@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "servers": {
+    "context7": {
+      "name": "Context7 MCP Server",
+      "description": "Documentation en temps réel pour améliorer les suggestions de code IA",
+      "package": "@upstash/context7-mcp",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "enabled": true
+    }
+  }
+}
+

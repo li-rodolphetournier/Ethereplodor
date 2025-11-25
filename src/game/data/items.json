@@ -1,0 +1,174 @@
+[
+  {
+    "id": "sword_basic",
+    "name": "Épée de Fer",
+    "description": "Une épée basique en fer",
+    "type": "weapon",
+    "rarity": "common",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 50,
+    "stats": {
+      "attack": 10
+    },
+    "color": "#9ca3af"
+  },
+  {
+    "id": "sword_steel",
+    "name": "Épée d'Acier",
+    "description": "Une épée forgée en acier",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 150,
+    "stats": {
+      "attack": 20
+    },
+    "color": "#22c55e"
+  },
+  {
+    "id": "sword_magic",
+    "name": "Épée Magique",
+    "description": "Une épée enchantée",
+    "type": "weapon",
+    "rarity": "rare",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 500,
+    "stats": {
+      "attack": 35,
+      "special": 15
+    },
+    "color": "#3b82f6"
+  },
+  {
+    "id": "armor_leather",
+    "name": "Armure de Cuir",
+    "description": "Armure légère en cuir",
+    "type": "armor",
+    "rarity": "common",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 40,
+    "stats": {
+      "defense": 8,
+      "hp": 20
+    },
+    "color": "#9ca3af"
+  },
+  {
+    "id": "armor_chain",
+    "name": "Cotte de Mailles",
+    "description": "Armure en mailles",
+    "type": "armor",
+    "rarity": "uncommon",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 200,
+    "stats": {
+      "defense": 18,
+      "hp": 40
+    },
+    "color": "#22c55e"
+  },
+  {
+    "id": "armor_plate",
+    "name": "Armure de Plaques",
+    "description": "Armure lourde en plaques",
+    "type": "armor",
+    "rarity": "rare",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 600,
+    "stats": {
+      "defense": 35,
+      "hp": 80
+    },
+    "color": "#3b82f6"
+  },
+  {
+    "id": "potion_health",
+    "name": "Potion de Soin",
+    "description": "Restaure 50 HP",
+    "type": "consumable",
+    "rarity": "common",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 25,
+    "stats": {
+      "hp": 50
+    },
+    "color": "#ef4444"
+  },
+  {
+    "id": "potion_health_greater",
+    "name": "Grande Potion de Soin",
+    "description": "Restaure 150 HP",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 100,
+    "stats": {
+      "hp": 150
+    },
+    "color": "#dc2626"
+  },
+  {
+    "id": "potion_mana",
+    "name": "Potion de Mana",
+    "description": "Restaure 50 Mana",
+    "type": "consumable",
+    "rarity": "common",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 30,
+    "color": "#3b82f6"
+  },
+  {
+    "id": "gold_coin",
+    "name": "Pièce d'Or",
+    "description": "Monnaie du royaume",
+    "type": "material",
+    "rarity": "common",
+    "stackable": true,
+    "stackSize": 9999,
+    "value": 1,
+    "color": "#fbbf24"
+  },
+  {
+    "id": "gem_common",
+    "name": "Gemme Commune",
+    "description": "Gemme de faible valeur",
+    "type": "material",
+    "rarity": "common",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 10,
+    "color": "#9ca3af"
+  },
+  {
+    "id": "gem_rare",
+    "name": "Gemme Rare",
+    "description": "Gemme précieuse",
+    "type": "material",
+    "rarity": "rare",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 100,
+    "color": "#3b82f6"
+  },
+  {
+    "id": "scroll_experience",
+    "name": "Parchemin d'Expérience",
+    "description": "Accorde 100 XP",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 200,
+    "color": "#8b5cf6"
+  }
+]
+

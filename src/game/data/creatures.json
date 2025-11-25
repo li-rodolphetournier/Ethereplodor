@@ -1,0 +1,281 @@
+[
+  {
+    "id": "flameon",
+    "name": "Flameon",
+    "type": "fire",
+    "baseStats": {
+      "hp": 50,
+      "maxHp": 50,
+      "attack": 65,
+      "defense": 45,
+      "speed": 60,
+      "special": 70
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "evolutionId": "flameon2",
+    "evolutionLevel": 16,
+    "color": "#ef4444",
+    "abilities": [
+      {
+        "id": "ember",
+        "name": "Ember",
+        "type": "fire",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 25,
+        "maxPp": 25
+      }
+    ]
+  },
+  {
+    "id": "flameon2",
+    "name": "Flareon",
+    "type": "fire",
+    "baseStats": {
+      "hp": 65,
+      "maxHp": 65,
+      "attack": 85,
+      "defense": 60,
+      "speed": 75,
+      "special": 90
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "color": "#dc2626",
+    "abilities": [
+      {
+        "id": "flamethrower",
+        "name": "Flamethrower",
+        "type": "fire",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 15,
+        "maxPp": 15
+      }
+    ]
+  },
+  {
+    "id": "aquatix",
+    "name": "Aquatix",
+    "type": "water",
+    "baseStats": {
+      "hp": 55,
+      "maxHp": 55,
+      "attack": 50,
+      "defense": 50,
+      "speed": 55,
+      "special": 65
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "evolutionId": "aquatix2",
+    "evolutionLevel": 16,
+    "color": "#3b82f6",
+    "abilities": [
+      {
+        "id": "watergun",
+        "name": "Water Gun",
+        "type": "water",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 25,
+        "maxPp": 25
+      }
+    ]
+  },
+  {
+    "id": "aquatix2",
+    "name": "Aquarion",
+    "type": "water",
+    "baseStats": {
+      "hp": 70,
+      "maxHp": 70,
+      "attack": 65,
+      "defense": 65,
+      "speed": 70,
+      "special": 85
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "color": "#1d4ed8",
+    "abilities": [
+      {
+        "id": "surf",
+        "name": "Surf",
+        "type": "water",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 15,
+        "maxPp": 15
+      }
+    ]
+  },
+  {
+    "id": "leaflet",
+    "name": "Leaflet",
+    "type": "grass",
+    "baseStats": {
+      "hp": 45,
+      "maxHp": 45,
+      "attack": 55,
+      "defense": 50,
+      "speed": 50,
+      "special": 60
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "evolutionId": "leaflet2",
+    "evolutionLevel": 16,
+    "color": "#22c55e",
+    "abilities": [
+      {
+        "id": "vinewhip",
+        "name": "Vine Whip",
+        "type": "grass",
+        "power": 45,
+        "accuracy": 100,
+        "pp": 25,
+        "maxPp": 25
+      }
+    ]
+  },
+  {
+    "id": "leaflet2",
+    "name": "Leafguard",
+    "type": "grass",
+    "baseStats": {
+      "hp": 60,
+      "maxHp": 60,
+      "attack": 70,
+      "defense": 65,
+      "speed": 65,
+      "special": 75
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "color": "#16a34a",
+    "abilities": [
+      {
+        "id": "solarbeam",
+        "name": "Solar Beam",
+        "type": "grass",
+        "power": 120,
+        "accuracy": 100,
+        "pp": 10,
+        "maxPp": 10
+      }
+    ]
+  },
+  {
+    "id": "sparky",
+    "name": "Sparky",
+    "type": "electric",
+    "baseStats": {
+      "hp": 40,
+      "maxHp": 40,
+      "attack": 60,
+      "defense": 40,
+      "speed": 70,
+      "special": 65
+    },
+    "captureRate": 45,
+    "growthRate": "fast",
+    "evolutionId": "sparky2",
+    "evolutionLevel": 20,
+    "color": "#fbbf24",
+    "abilities": [
+      {
+        "id": "thundershock",
+        "name": "Thunder Shock",
+        "type": "electric",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 30,
+        "maxPp": 30
+      }
+    ]
+  },
+  {
+    "id": "sparky2",
+    "name": "Thunderbolt",
+    "type": "electric",
+    "baseStats": {
+      "hp": 55,
+      "maxHp": 55,
+      "attack": 75,
+      "defense": 55,
+      "speed": 90,
+      "special": 80
+    },
+    "captureRate": 45,
+    "growthRate": "fast",
+    "color": "#f59e0b",
+    "abilities": [
+      {
+        "id": "thunder",
+        "name": "Thunder",
+        "type": "electric",
+        "power": 110,
+        "accuracy": 70,
+        "pp": 10,
+        "maxPp": 10
+      }
+    ]
+  },
+  {
+    "id": "rocky",
+    "name": "Rocky",
+    "type": "ground",
+    "baseStats": {
+      "hp": 60,
+      "maxHp": 60,
+      "attack": 50,
+      "defense": 70,
+      "speed": 30,
+      "special": 40
+    },
+    "captureRate": 45,
+    "growthRate": "slow",
+    "color": "#a16207",
+    "abilities": [
+      {
+        "id": "tackle",
+        "name": "Tackle",
+        "type": "ground",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 35,
+        "maxPp": 35
+      }
+    ]
+  },
+  {
+    "id": "windy",
+    "name": "Windy",
+    "type": "flying",
+    "baseStats": {
+      "hp": 45,
+      "maxHp": 45,
+      "attack": 55,
+      "defense": 40,
+      "speed": 65,
+      "special": 50
+    },
+    "captureRate": 45,
+    "growthRate": "medium",
+    "color": "#a78bfa",
+    "abilities": [
+      {
+        "id": "gust",
+        "name": "Gust",
+        "type": "flying",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 35,
+        "maxPp": 35
+      }
+    ]
+  }
+]
+

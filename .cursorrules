@@ -1,0 +1,65 @@
+# .cursorrules
+# Objectif: contraindre Cursor AI à générer du code TypeScript, respect des patterns R3F/engine, tests, et PR-friendly.
+
+rules:
+  - id: prefer-typescript
+    description: "Toujours générer TypeScript (no implicit any)."
+    match: "file_extension in ['ts', 'tsx', 'tsconfig', 'json']"
+    enforce:
+      - "typescript.strict: true"
+      - "no-implicit-any: true"
+
+  - id: react-three-fiber-style
+    description: "Pour tout code lié au rendu 3D, utiliser @react-three/fiber + drei patterns."
+    match: "path contains 'renderer' or 'web/src/components/3d' or file.content contains 'three' or 'react-three'"
+    enforce:
+      - "prefer-imports: ['@react-three/fiber', '@react-three/drei']"
+      - "avoid-direct-three-instantiation: true"
+      - "use-useFrame-for-animation: true"
+
+  - id: engine-separation
+    description: "Ne pas importer le DOM dans packages/engine. Le moteur doit être headless."
+    match: "path startswith 'packages/engine'"
+    enforce:
+      - "no-dom-imports: ['react', 'window', 'document']"
+      - "export-types-only-for-ui-interop: true"
+
+  - id: tests-required
+    description: "Générer tests unitaires pour tout module non trivial (>20 LOC)."
+    match: "file.length > 20 and file.extension in ['ts', 'tsx']"
+    enforce:
+      - "ensure-test-file: true"
+      - "test-framework: 'vitest'"
+
+  - id: no-any
+    description: "Interdire any dans les nouveaux fichiers."
+    match: "file.extension in ['ts','tsx']"
+    enforce:
+      - "lint-rule: '@typescript-eslint/no-explicit-any': 'error'"
+
+  - id: pr-checklist-gen
+    description: "Lors de la génération d'une nouvelle feature, produire un template PR description."
+    match: "git.branch startswith 'feat/'"
+    enforce:
+      - "generate-pr-template: true"
+      - "pr-template: |
+          - Contexte / objectif
+          - Changements clés
+          - Checklist: lint, tests, build, smoke test
+        "
+
+  - id: generate-docs
+    description: "Pour tout package nouveau, générer README minimal + diagramme architecture si possible."
+    match: "created_file in ['packages/*/index.ts']"
+    enforce:
+      - "generate-readme: true"
+
+preferences:
+  code-style:
+    indent: 2
+    semi: true
+    quotes: single
+
+completion:
+  max_tokens: 1200
+  prefer_tests: true
