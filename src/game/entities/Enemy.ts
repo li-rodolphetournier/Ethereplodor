@@ -101,18 +101,18 @@ export class EnemyAI {
     );
   }
 
-  private performAttack(): { damage: number; isDead: boolean } {
+  private performAttack(): { damage: number; isDead: boolean; isCritical: boolean } {
     if (combatSystem.canAttack(this.enemy, this.player, this.enemy.attackRange)) {
-      const damage = combatSystem.calculateDamage(this.enemy, this.player);
+      const result = combatSystem.calculateDamage(this.enemy, this.player);
       // On ne modifie pas directement le joueur ici, on retourne les dégâts
-      const isDead = this.player.hp - damage <= 0;
+      const isDead = this.player.hp - result.damage <= 0;
       this.enemy.lastAttackTime = Date.now();
-      return { damage, isDead };
+      return { damage: result.damage, isDead, isCritical: result.isCritical };
     }
-    return { damage: 0, isDead: false };
+    return { damage: 0, isDead: false, isCritical: false };
   }
 
-  getAttackResult(): { damage: number; isDead: boolean } | null {
+  getAttackResult(): { damage: number; isDead: boolean; isCritical: boolean } | null {
     if (this.enemy.state === EnemyState.ATTACK && 
         combatSystem.canAttack(this.enemy, this.player, this.enemy.attackRange)) {
       const currentTime = Date.now();

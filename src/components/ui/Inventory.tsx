@@ -130,11 +130,17 @@ export function Inventory() {
                   className="bg-gray-800 p-2 rounded border border-gray-700 hover:border-gray-600 cursor-pointer relative group"
                   onClick={() => {
                     if (invItem.item.type === ItemType.CONSUMABLE) {
-                      useItem(invItem.item.id);
+                      const used = useItem(invItem.item.id);
+                      if (used && invItem.item.stats?.hp) {
+                        // Potion de soin utilisée - le système de jeu gérera la guérison
+                        console.log(`Utilisé: ${invItem.item.name}`);
+                      }
                     } else if (invItem.item.type === ItemType.WEAPON) {
                       useItem(invItem.item.id);
+                      console.log(`Équipé: ${invItem.item.name}`);
                     } else if (invItem.item.type === ItemType.ARMOR) {
                       useItem(invItem.item.id);
+                      console.log(`Équipé: ${invItem.item.name}`);
                     }
                   }}
                 >

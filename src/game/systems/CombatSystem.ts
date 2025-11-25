@@ -10,14 +10,20 @@ export interface CombatEntity {
 }
 
 export class CombatSystem {
-  calculateDamage(attacker: CombatEntity, defender: CombatEntity): number {
+  calculateDamage(attacker: CombatEntity, defender: CombatEntity): { damage: number; isCritical: boolean } {
     const baseDamage = attacker.attack;
     const reduction = defender.defense * 0.5;
     const finalDamage = Math.max(1, baseDamage - reduction);
 
+    // Coup critique (5% de chance, x1.5 dégâts)
+    const isCritical = Math.random() < 0.05;
+    const criticalMultiplier = isCritical ? 1.5 : 1;
+
     // Variance aléatoire ±10%
     const variance = 0.9 + Math.random() * 0.2;
-    return Math.floor(finalDamage * variance);
+    const damage = Math.floor(finalDamage * variance * criticalMultiplier);
+    
+    return { damage, isCritical };
   }
 
   applyDamage(entity: CombatEntity, damage: number): boolean {

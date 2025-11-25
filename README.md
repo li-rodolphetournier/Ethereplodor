@@ -20,13 +20,14 @@ npm run dev
 npm run build
 ```
 
-## 🎮 Features (en développement)
+## 🎮 Features
 
 - [x] Phase 0: Infrastructure de base
-- [ ] Sprint 1: Core Gameplay
-- [ ] Sprint 2: Système de Combat
-- [ ] Sprint 3: Système Créatures
-- [ ] Sprint 4: Progression & Loot
+- [x] Sprint 1: Core Gameplay (Déplacement, caméra, contrôles)
+- [x] Sprint 2: Système de Combat (IA ennemis, spawn, barres de vie)
+- [x] Sprint 3: Système Créatures (Capture, équipe, évolution)
+- [x] Sprint 4: Progression & Loot (Inventaire, items, équipement)
+- [x] Améliorations: Système de notifications, utilisation d'items
 
 ## 📐 Architecture
 

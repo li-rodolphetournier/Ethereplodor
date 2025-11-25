@@ -29,6 +29,7 @@ export const useInventoryStore = create<InventoryState>()(
       maxSlots: 40,
       equippedWeapon: null,
       equippedArmor: null,
+      lastUsedItem: null,
 
       addItem: (item, quantity = 1) =>
         set((state) => {
@@ -113,8 +114,9 @@ export const useInventoryStore = create<InventoryState>()(
         const item = invItem.item;
 
         if (item.type === 'consumable') {
-          // Utiliser l'item (sera géré par le système de jeu)
+          // Utiliser l'item consommable
           state.removeItem(itemId, 1);
+          set({ lastUsedItem: itemId });
           return true;
         }
 
