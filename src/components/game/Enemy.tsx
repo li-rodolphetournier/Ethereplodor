@@ -7,6 +7,7 @@ import { usePlayerStore } from '@/stores/playerStore';
 import { useGameStore } from '@/stores/gameStore';
 import { HealthBar } from '@/components/ui/HealthBar';
 import { showDamageNumber } from '@/components/effects/DamageNumberManager';
+import { ParticleSystem } from '@/components/effects/ParticleSystem';
 
 interface EnemyProps {
   enemy: EnemyData;
@@ -43,10 +44,12 @@ export function Enemy({ enemy }: EnemyProps) {
     timeRef.current += delta;
 
     if (enemy.state === EnemyState.DEAD || enemy.hp <= 0) {
-      // Animation de mort
+      // Animation de mort dramatique style Diablo IV
       if (meshRef.current) {
-        meshRef.current.rotation.x += delta * 2;
-        meshRef.current.position.y -= delta * 2;
+        meshRef.current.rotation.x += delta * 3;
+        meshRef.current.rotation.z += delta * 1.5;
+        meshRef.current.position.y -= delta * 3;
+        meshRef.current.scale.multiplyScalar(1 - delta * 0.5);
         if (meshRef.current.position.y < -5) {
           removeEnemy(enemy.id);
         }
@@ -145,33 +148,36 @@ export function Enemy({ enemy }: EnemyProps) {
       >
         <CapsuleCollider args={[0.4, 0.4]} />
         <group ref={meshRef}>
-          {/* Corps principal - sombre et menaçant */}
+          {/* Corps principal - plus visible */}
           <mesh ref={bodyRef} castShadow>
             <octahedronGeometry args={[0.5, 0]} />
             <meshStandardMaterial
               color={enemyColor}
-              metalness={0.3}
-              roughness={0.8}
-              emissive="#1a0000"
-              emissiveIntensity={0.1}
+              metalness={0.4}
+              roughness={0.7}
+              emissive={enemyColor}
+              emissiveIntensity={0.4}
             />
           </mesh>
+
+          {/* Éclairage local sur l'ennemi */}
+          <pointLight position={[0, 0.5, 0]} intensity={1.2} color={enemyColor} distance={7} decay={2} />
 
           {/* Yeux rouges menaçants */}
           <mesh castShadow position={[0.2, 0.1, 0.4]}>
             <sphereGeometry args={[0.1, 8, 8]} />
             <meshStandardMaterial
-              color="#8b0000"
-              emissive="#ff0000"
-              emissiveIntensity={0.6}
+              color="#ff0000"
+              emissive="#ff4444"
+              emissiveIntensity={1.2}
             />
           </mesh>
           <mesh castShadow position={[-0.2, 0.1, 0.4]}>
             <sphereGeometry args={[0.1, 8, 8]} />
             <meshStandardMaterial
-              color="#8b0000"
-              emissive="#ff0000"
-              emissiveIntensity={0.6}
+              color="#ff0000"
+              emissive="#ff4444"
+              emissiveIntensity={1.2}
             />
           </mesh>
 
@@ -198,16 +204,27 @@ export function Enemy({ enemy }: EnemyProps) {
             />
           </mesh>
 
-          {/* Aura sombre menaçante */}
+          {/* Aura sombre menaçante avec pulsation */}
           <mesh position={[0, 0, 0]}>
             <ringGeometry args={[0.6, 0.7, 32]} />
             <meshBasicMaterial
               color="#1a0000"
               transparent
-              opacity={0.3}
+              opacity={0.3 + Math.sin(timeRef.current * 3) * 0.1}
               side={THREE.DoubleSide}
             />
           </mesh>
+
+          {/* Particules d'énergie sombre */}
+          {enemy.state === EnemyState.ATTACK && (
+            <ParticleSystem
+              position={[enemy.position.x, enemy.position.y + 0.5, enemy.position.z]}
+              color="#8b0000"
+              count={30}
+              size={0.05}
+              speed={0.3}
+            />
+          )}
         </group>
       </RigidBody>
       {enemy.hp > 0 && (

@@ -1,23 +1,25 @@
 import { Canvas, useThree } from '@react-three/fiber';
-import { Sky, Environment as DreiEnvironment } from '@react-three/drei';
-import { Physics, RigidBody } from '@react-three/rapier';
+import { Sky, Environment as DreiEnvironment, Html } from '@react-three/drei';
+import { Physics } from '@react-three/rapier';
 import { IsometricCamera } from './IsometricCamera';
 import { Player } from './Player';
 import { EnemyManager } from './EnemyManager';
 import { WildCreatureManager } from './WildCreatureManager';
 import { LootManager } from './LootManager';
-import { Environment } from './Environment';
 import { DamageNumberManager } from '../effects/DamageNumberManager';
 import { usePlayerStore } from '@/stores/playerStore';
+import { LevelManager } from './LevelManager';
+import { useLevelStore } from '@/stores/levelStore';
 import { useEffect } from 'react';
 import * as THREE from 'three';
 
-// Composant pour configurer le brouillard
+// Composant pour configurer le brouillard style Diablo IV
 function FogComponent() {
   const { scene } = useThree();
   
   useEffect(() => {
-    const fog = new THREE.Fog('#4a4a5a', 30, 80);
+    // Brouillard sombre mais visible style Diablo IV
+    const fog = new THREE.Fog('#3a3a2a', 30, 80);
     scene.fog = fog;
     
     return () => {
@@ -30,6 +32,8 @@ function FogComponent() {
 
 export function World() {
   const playerPosition = usePlayerStore((state) => state.position);
+  const currentLevel = useLevelStore((state) => state.currentLevel);
+  const isLoading = useLevelStore((state) => state.isLoading);
 
   return (
     <Canvas
@@ -38,107 +42,68 @@ export function World() {
         antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.5,
+        toneMappingExposure: 1.5, // Plus lumineux pour voir la scène
       }}
       camera={{
         position: [10, 10, 10],
         fov: 50,
       }}
       tabIndex={0}
-      style={{ outline: 'none' }}
+      style={{ outline: 'none', background: '#1a1a1a' }}
+      onCreated={({ scene }) => {
+        scene.background = new THREE.Color('#1a1a1a');
+      }}
     >
-      {/* Éclairage amélioré - style Diablo mais plus visible */}
-      <ambientLight intensity={0.8} color="#6a6a7a" />
-      
-      {/* Lumière principale directionnelle (soleil/lune) */}
+      {/* Éclairage principal */}
+      <ambientLight intensity={0.8} color="#5a5a4a" />
       <directionalLight
-        position={[10, 15, 5]}
-        intensity={1.5}
+        position={[15, 20, 10]}
+        intensity={2.5}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={50}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
+        shadow-mapSize-width={4096}
+        shadow-mapSize-height={4096}
+        shadow-camera-far={60}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
         shadow-bias={-0.0001}
-        color="#e4d5b9"
+        shadow-radius={4}
+        color="#f4e5c9"
       />
 
-      {/* Lumière d'ambiance supplémentaire pour visibilité */}
-      <directionalLight
-        position={[-10, 10, -5]}
-        intensity={0.6}
-        color="#9badd3"
-      />
+      {/* Lumières secondaires */}
+      <directionalLight position={[-15, 12, -8]} intensity={1} color="#a0b0d3" />
+      <directionalLight position={[0, 15, 0]} intensity={0.8} color="#ffffff" />
 
-      {/* Lumière d'ambiance rougeâtre (style infernal) - réduite */}
-      <pointLight
-        position={[0, 5, 0]}
-        intensity={0.3}
-        color="#ff6b35"
-        distance={20}
-        decay={2}
-      />
+      {/* Lumières d'ambiance chaude */}
+      <pointLight position={[0, 3, 0]} intensity={0.5} color="#8b0000" distance={25} decay={2} castShadow />
+      <pointLight position={[-10, 2, -10]} intensity={0.3} color="#ff4500" distance={20} decay={2} />
+      <pointLight position={[10, 2, 10]} intensity={0.3} color="#ff4500" distance={20} decay={2} />
 
-      {/* Brouillard sombre */}
       <FogComponent />
 
       <Physics gravity={[0, -9.81, 0]}>
-        {/* Environnement décoratif */}
-        <Environment />
-
-        {/* Obstacles de test avec collisions */}
-        <RigidBody type="fixed" position={[5, 1, 5]}>
-          <mesh castShadow receiveShadow>
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial
-              color="#2d1810"
-              metalness={0.1}
-              roughness={0.9}
-            />
-          </mesh>
-        </RigidBody>
-        <RigidBody type="fixed" position={[-5, 1, -5]}>
-          <mesh castShadow receiveShadow>
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial
-              color="#1a1a1a"
-              metalness={0.1}
-              roughness={0.9}
-            />
-          </mesh>
-        </RigidBody>
-
-        {/* Joueur */}
+        <LevelManager />
         <Player />
-
-        {/* Ennemis */}
-        <EnemyManager />
-
-        {/* Créatures sauvages */}
-        <WildCreatureManager />
-
-        {/* Loot */}
+        {currentLevel?.type === 'outdoor' && <EnemyManager />}
+        {currentLevel?.type === 'outdoor' && <WildCreatureManager />}
         <LootManager />
       </Physics>
 
+      {isLoading && (
+        <Html center>
+          <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+            <div className="text-amber-500 text-2xl font-bold">Chargement...</div>
+          </div>
+        </Html>
+      )}
+
       <IsometricCamera target={playerPosition} distance={15} />
-      
-      {/* Ciel sombre */}
-      <Sky
-        sunPosition={[100, 20, 100]}
-        turbidity={8}
-        rayleigh={1}
-        mieCoefficient={0.005}
-        mieDirectionalG={0.8}
-        inclination={0.49}
-        azimuth={0.25}
-      />
-      
-      {/* Environnement post-processing - désactivé pour plus de visibilité */}
-      {/* <DreiEnvironment preset="night" /> */}
+
+      {/* On désactive le ciel afin de garder un fond sombre */}
+      {/* <Sky ... /> */}
+      <DreiEnvironment preset="night" />
       <DamageNumberManager />
     </Canvas>
   );

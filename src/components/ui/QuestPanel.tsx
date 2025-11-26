@@ -8,7 +8,10 @@ export function QuestPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const { quests, startQuest, claimReward, refreshQuests } = useQuestStore();
   const { ref, position, handleMouseDown } = useDraggable({
-    initialPosition: { x: window.innerWidth / 2 - 400, y: window.innerHeight / 2 - 400 },
+    initialPosition: { 
+      x: (window.innerWidth - Math.min(window.innerWidth * 0.9, 1024)) / 2, 
+      y: (window.innerHeight - window.innerHeight * 0.8) / 2 
+    },
     bounds: 'window',
   });
 
@@ -86,7 +89,7 @@ export function QuestPanel() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 z-50">
       <div
         ref={ref}
         className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[90vw] max-w-4xl h-[80vh] flex flex-col"

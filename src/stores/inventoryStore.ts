@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Item, InventoryItem } from '@/game/entities/Item';
+import { showNotification } from '@/components/ui/Notification';
+import { usePlayerStore } from './playerStore';
 
 interface InventoryState {
   items: InventoryItem[];
@@ -112,9 +114,28 @@ export const useInventoryStore = create<InventoryState>()(
         if (!invItem) return false;
 
         const item = invItem.item;
+        const playerStore = usePlayerStore.getState();
 
         if (item.type === 'consumable') {
-          // Utiliser l'item consommable
+          let consumed = false;
+
+          if (item.stats?.hp) {
+            const missingHp = playerStore.maxHealth - playerStore.health;
+            if (missingHp <= 0) {
+              showNotification('Vie déjà pleine.', 'info');
+              return false;
+            }
+            const healed = Math.min(item.stats.hp, missingHp);
+            playerStore.heal(item.stats.hp);
+            consumed = true;
+            showNotification(`+${healed} HP`, 'success');
+          }
+
+          if (!consumed) {
+            showNotification("Impossible d'utiliser cet objet pour l'instant.", 'error');
+            return false;
+          }
+
           state.removeItem(itemId, 1);
           set({ lastUsedItem: itemId });
           return true;

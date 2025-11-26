@@ -16,21 +16,21 @@ export function useDraggable(options: UseDraggableOptions = {}) {
     if (!isDragging) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (!elementRef.current) return;
+
+      const rect = elementRef.current.getBoundingClientRect();
       const deltaX = e.clientX - dragStartPos.current.x;
       const deltaY = e.clientY - dragStartPos.current.y;
 
-      let newX = position.x + deltaX;
-      let newY = position.y + deltaY;
+      let newX = rect.left + deltaX;
+      let newY = rect.top + deltaY;
 
       // Appliquer les limites
       if (bounds === 'window') {
-        if (elementRef.current) {
-          const rect = elementRef.current.getBoundingClientRect();
-          const maxX = window.innerWidth - rect.width;
-          const maxY = window.innerHeight - rect.height;
-          newX = Math.max(0, Math.min(newX, maxX));
-          newY = Math.max(0, Math.min(newY, maxY));
-        }
+        const maxX = window.innerWidth - rect.width;
+        const maxY = window.innerHeight - rect.height;
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
       }
 
       setPosition({ x: newX, y: newY });

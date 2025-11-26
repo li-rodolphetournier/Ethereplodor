@@ -8,6 +8,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { combatSystem } from '@/game/systems/CombatSystem';
 import { showDamageNumber } from '@/components/effects/DamageNumberManager';
+import { useLevelStore } from '@/stores/levelStore';
 
 export function Player() {
   const playerRef = useRef<RapierRigidBody>(null);
@@ -18,14 +19,18 @@ export function Player() {
   const { setPosition, setRotation, setIsMoving, setAnimationState, speed } = usePlayerStore();
   const equippedWeapon = useInventoryStore((state) => state.equippedWeapon);
   const equippedArmor = useInventoryStore((state) => state.equippedArmor);
+  const currentLevel = useLevelStore((state) => state.currentLevel);
 
-  // Initialiser l'InputManager
   useEffect(() => {
-    inputManager.init();
-    return () => {
-      inputManager.cleanup();
-    };
-  }, []);
+    if (!playerRef.current || !meshRef.current) return;
+    const spawn = currentLevel.spawnPoint;
+    const spawnVector = new THREE.Vector3(spawn[0], spawn[1], spawn[2]);
+    playerRef.current.setTranslation(
+      { x: spawnVector.x, y: spawnVector.y, z: spawnVector.z },
+      true
+    );
+    meshRef.current.position.copy(spawnVector);
+  }, [currentLevel.id]);
 
   useFrame(() => {
     if (!playerRef.current || !meshRef.current || !bodyRef.current) return;
@@ -99,14 +104,18 @@ export function Player() {
         );
         const attackRange = 2.5;
 
-        // Animation d'attaque
+        // Animation d'attaque améliorée style Diablo IV
         if (weaponRef.current) {
-          weaponRef.current.rotation.x = Math.PI / 4;
+          // Animation de frappe plus dramatique avec effet de particules
+          weaponRef.current.rotation.x = Math.PI / 3;
+          weaponRef.current.position.y += 0.2;
+
           window.setTimeout(() => {
             if (weaponRef.current) {
               weaponRef.current.rotation.x = 0;
+              weaponRef.current.position.y -= 0.2;
             }
-          }, 200);
+          }, 250);
         }
 
         // Vérifier les ennemis à portée
@@ -136,8 +145,8 @@ export function Player() {
 
             if (newHp <= 0) {
               console.log(`Enemy ${enemy.id} vaincu!`);
-              // Mettre à jour la progression des quêtes
-              questSystem.onEnemyKilled();
+              // TODO: Mettre à jour la progression des quêtes
+              // questSystem.onEnemyKilled();
             }
           }
         });
@@ -150,9 +159,10 @@ export function Player() {
     setPosition(new THREE.Vector3(position.x, position.y, position.z));
   });
 
-  // Couleurs sombres style Diablo
-  const armorColor = equippedArmor?.color || '#4a3728'; // Marron sombre
-  const weaponColor = equippedWeapon?.color || '#8b4513'; // Marron cuir
+  // Couleurs plus visibles tout en conservant le style Diablo
+  const armorColor = equippedArmor?.color || '#6b5a4a';
+  const weaponColor = equippedWeapon?.color || '#9b6a4a';
+  const bodyColor = '#5a4a3a';
 
   return (
     <RigidBody
@@ -168,20 +178,25 @@ export function Player() {
         <mesh ref={bodyRef} castShadow position={[0, 0.5, 0]}>
           <capsuleGeometry args={[0.4, 1.2, 8, 16]} />
           <meshStandardMaterial
-            color={armorColor}
-            metalness={0.2}
-            roughness={0.85}
-            emissive="#1a1a1a"
-            emissiveIntensity={0.05}
+            color={bodyColor}
+            metalness={0.3}
+            roughness={0.7}
+            emissive={bodyColor}
+            emissiveIntensity={0.3}
           />
         </mesh>
+
+        {/* Éclairage local autour du joueur */}
+        <pointLight position={[0, 1, 0]} intensity={1.5} color="#ffffff" distance={8} decay={2} />
 
         {/* Tête */}
         <mesh castShadow position={[0, 1.3, 0]}>
           <sphereGeometry args={[0.3, 16, 16]} />
           <meshStandardMaterial
-            color="#8b7355"
-            roughness={0.8}
+            color="#aa9272"
+            roughness={0.7}
+            emissive="#8b7355"
+            emissiveIntensity={0.2}
           />
         </mesh>
 
@@ -189,9 +204,11 @@ export function Player() {
         <mesh castShadow position={[0, 1.4, 0]}>
           <torusGeometry args={[0.35, 0.05, 8, 16]} />
           <meshStandardMaterial
-            color="#2d2d2d"
-            metalness={0.3}
-            roughness={0.7}
+            color="#4a4a4a"
+            metalness={0.5}
+            roughness={0.6}
+            emissive="#3a3a3a"
+            emissiveIntensity={0.15}
           />
         </mesh>
 
@@ -200,8 +217,10 @@ export function Player() {
           <capsuleGeometry args={[0.15, 0.6, 8, 8]} />
           <meshStandardMaterial
             color={armorColor}
-            metalness={0.2}
-            roughness={0.85}
+            metalness={0.3}
+            roughness={0.7}
+            emissive={armorColor}
+            emissiveIntensity={0.25}
           />
         </mesh>
 
@@ -211,8 +230,8 @@ export function Player() {
             <capsuleGeometry args={[0.15, 0.6, 8, 8]} />
             <meshStandardMaterial
               color={armorColor}
-              metalness={0.2}
-              roughness={0.85}
+              metalness={0.3}
+              roughness={0.7}
             />
           </mesh>
           {/* Arme - épée sombre */}
@@ -246,16 +265,20 @@ export function Player() {
           <capsuleGeometry args={[0.15, 0.5, 8, 8]} />
           <meshStandardMaterial
             color={armorColor}
-            metalness={0.2}
-            roughness={0.85}
+            metalness={0.3}
+            roughness={0.7}
+            emissive={armorColor}
+            emissiveIntensity={0.25}
           />
         </mesh>
         <mesh castShadow position={[0.2, -0.2, 0]}>
           <capsuleGeometry args={[0.15, 0.5, 8, 8]} />
           <meshStandardMaterial
             color={armorColor}
-            metalness={0.2}
-            roughness={0.85}
+            metalness={0.3}
+            roughness={0.7}
+            emissive={armorColor}
+            emissiveIntensity={0.25}
           />
         </mesh>
 

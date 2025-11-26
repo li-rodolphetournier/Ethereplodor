@@ -7,7 +7,10 @@ export function SaveLoadMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { saveGame, loadGame } = useGameSave();
   const { ref, position, handleMouseDown } = useDraggable({
-    initialPosition: { x: window.innerWidth / 2 - 200, y: window.innerHeight / 2 - 200 },
+    initialPosition: { 
+      x: (window.innerWidth - 400) / 2, 
+      y: (window.innerHeight - 300) / 2 
+    },
     bounds: 'window',
   });
 
@@ -36,7 +39,7 @@ export function SaveLoadMenu() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 z-50">
       <div
         ref={ref}
         className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[400px] p-6"

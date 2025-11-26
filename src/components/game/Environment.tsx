@@ -12,7 +12,7 @@ export function Environment() {
   
   // Stocker les positions des arbres, roches et pierres tombales pour les colliders
   const treePositionsRef = useRef<Array<[number, number]>>([]);
-  const rockPositionsRef = useRef<Array<[number, number, number]>>([]);
+  const rockPositionsRef = useRef<Array<{ position: [number, number, number]; scale: number }>>([]);
   const tombstonePositionsRef = useRef<Array<[number, number]>>([]);
 
   // Créer des instances pour l'herbe sombre
@@ -35,23 +35,26 @@ export function Environment() {
     }
   }, []);
 
-  // Créer des rochers sombres
+      // Créer des rochers sombres
   useEffect(() => {
     if (rockRef.current) {
       const count = 35;
       const matrix = new THREE.Matrix4();
-      const positions: Array<[number, number, number]> = [];
+      const positions: Array<{ position: [number, number, number]; scale: number }> = [];
 
       for (let i = 0; i < count; i++) {
         const x = (Math.random() - 0.5) * 40;
         const z = (Math.random() - 0.5) * 40;
         const y = 0;
         const scale = Math.random() * 0.4 + 0.3;
+        // Calculer la hauteur réelle du rocher (centre de la géométrie)
+        const rockHeight = 0.5 * scale; // Le dodecahedron a un rayon de 0.5
 
         matrix.makeScale(scale, scale, scale);
-        matrix.setPosition(x, y, z);
+        matrix.setPosition(x, y + rockHeight, z);
         rockRef.current.setMatrixAt(i, matrix);
-        positions.push([x, y + 0.25, z]);
+        // Position du collider au centre du rocher avec son scale
+        positions.push({ position: [x, y + rockHeight, z], scale });
       }
       rockRef.current.instanceMatrix.needsUpdate = true;
       rockPositionsRef.current = positions;
@@ -121,16 +124,16 @@ export function Environment() {
 
   return (
     <>
-      {/* Sol avec texture et couleurs variées */}
+      {/* Sol sombre style Diablo IV avec variations */}
       <RigidBody type="fixed" position={[0, 0, 0]}>
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[50, 50, 32, 32]} />
+          <planeGeometry args={[50, 50, 64, 64]} />
           <meshStandardMaterial
-            color="#6b8e5a"
-            roughness={0.95}
-            metalness={0.05}
-            emissive="#3a4a2a"
-            emissiveIntensity={0.1}
+            color="#2a2a1a"
+            roughness={0.98}
+            metalness={0.02}
+            emissive="#1a1a0a"
+            emissiveIntensity={0.05}
           />
         </mesh>
         {/* Collider explicite pour le sol */}
@@ -185,11 +188,18 @@ export function Environment() {
       </instancedMesh>
       
       {/* Colliders pour les roches instanciées */}
-      {rockPositionsRef.current && rockPositionsRef.current.length > 0 && rockPositionsRef.current.map(([x, y, z], i) => (
-        <RigidBody key={`rock-collider-${i}`} type="fixed" position={[x, y, z]}>
-          <BallCollider args={[0.5]} />
-        </RigidBody>
-      ))}
+      {rockPositionsRef.current && rockPositionsRef.current.length > 0 && rockPositionsRef.current.map((rockData, i) => {
+        const [x, y, z] = rockData.position;
+        const scale = rockData.scale;
+        // Calculer la taille du collider en fonction de la taille réelle de la roche
+        const baseRadius = 0.5; // Rayon de base du dodecahedron
+        const colliderRadius = baseRadius * scale;
+        return (
+          <RigidBody key={`rock-collider-${i}`} type="fixed" position={[x, y, z]}>
+            <BallCollider args={[colliderRadius]} />
+          </RigidBody>
+        );
+      })}
       
       {/* Rochers supplémentaires avec couleurs différentes - avec collisions */}
       {Array.from({ length: 20 })
@@ -284,7 +294,7 @@ export function Environment() {
         </RigidBody>
       ))}
 
-      {/* Pierres décoratives avec couleurs variées */}
+      {/* Pierres décoratives avec couleurs variées - avec collisions */}
       {Array.from({ length: 50 })
         .map((_, i) => {
           const x = (Math.random() - 0.5) * 45;
@@ -295,24 +305,29 @@ export function Environment() {
           const colors = ['#6b6b6b', '#7a6b5a', '#5a5a4a', '#6b5a4a'];
           const color = colors[Math.floor(Math.random() * colors.length)];
           return (
-            <mesh
+            <RigidBody
               key={`stone-${i}`}
+              type="fixed"
               position={[x, -0.9, z]}
-              scale={[scale, scale, scale]}
-              castShadow
-              receiveShadow
             >
-              <dodecahedronGeometry args={[0.3, 0]} />
-              <meshStandardMaterial
-                color={color}
-                roughness={0.95}
-              />
-            </mesh>
+              <mesh
+                scale={[scale, scale, scale]}
+                castShadow
+                receiveShadow
+              >
+                <dodecahedronGeometry args={[0.3, 0]} />
+                <meshStandardMaterial
+                  color={color}
+                  roughness={0.95}
+                />
+              </mesh>
+              <BallCollider args={[0.3 * scale]} />
+            </RigidBody>
           );
         })
         .filter(Boolean)}
 
-      {/* Fleurs colorées */}
+      {/* Fleurs colorées - avec collisions */}
       {Array.from({ length: 30 })
         .map((_, i) => {
           const x = (Math.random() - 0.5) * 45;
@@ -322,18 +337,21 @@ export function Environment() {
           const colors = ['#ff6b9d', '#ffd93d', '#6bcf7f', '#4ecdc4', '#95e1d3'];
           const color = colors[Math.floor(Math.random() * colors.length)];
           return (
-            <mesh
+            <RigidBody
               key={`flower-${i}`}
+              type="fixed"
               position={[x, 0.05, z]}
-              castShadow
             >
-              <sphereGeometry args={[0.05, 8, 8]} />
-              <meshStandardMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={0.5}
-              />
-            </mesh>
+              <mesh castShadow>
+                <sphereGeometry args={[0.05, 8, 8]} />
+                <meshStandardMaterial
+                  color={color}
+                  emissive={color}
+                  emissiveIntensity={0.5}
+                />
+              </mesh>
+              <BallCollider args={[0.05]} />
+            </RigidBody>
           );
         })
         .filter(Boolean)}
