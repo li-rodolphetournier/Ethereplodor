@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { ItemType, ItemRarity } from '@/game/entities/Item';
 import { showNotification } from './Notification';
+import { useDraggable } from '@/hooks/useDraggable';
 
 export function Inventory() {
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | ItemType>('all');
+  const { ref, position, handleMouseDown } = useDraggable({
+    initialPosition: { x: window.innerWidth / 2 - 400, y: window.innerHeight / 2 - 400 },
+    bounds: 'window',
+  });
 
   // Ouvrir/fermer avec la touche I
   useEffect(() => {
@@ -66,9 +71,20 @@ export function Inventory() {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg w-[90vw] max-w-4xl h-[80vh] flex flex-col">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
+      <div
+        ref={ref}
+        className="bg-gray-900 border border-gray-700 rounded-lg w-[90vw] max-w-4xl h-[80vh] flex flex-col"
+        style={{
+          position: 'absolute',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+      >
+        {/* Header - draggable */}
+        <div
+          className="flex justify-between items-center p-4 border-b border-gray-700 cursor-move select-none"
+          onMouseDown={handleMouseDown}
+        >
           <h2 className="text-2xl font-bold text-white">Inventaire</h2>
           <div className="flex items-center gap-4">
             <div className="text-yellow-400 font-semibold">

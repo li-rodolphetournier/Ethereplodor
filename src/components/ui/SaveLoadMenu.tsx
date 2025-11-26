@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { useGameSave } from '@/hooks/useGameSave';
 import { showNotification } from './Notification';
+import { useDraggable } from '@/hooks/useDraggable';
 
 export function SaveLoadMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { saveGame, loadGame } = useGameSave();
+  const { ref, position, handleMouseDown } = useDraggable({
+    initialPosition: { x: window.innerWidth / 2 - 200, y: window.innerHeight / 2 - 200 },
+    bounds: 'window',
+  });
 
   const handleSave = async () => {
     await saveGame();
@@ -32,8 +37,19 @@ export function SaveLoadMenu() {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[400px] p-6">
-        <div className="flex justify-between items-center mb-4">
+      <div
+        ref={ref}
+        className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[400px] p-6"
+        style={{
+          position: 'absolute',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+      >
+        <div
+          className="flex justify-between items-center mb-4 cursor-move select-none"
+          onMouseDown={handleMouseDown}
+        >
           <h2 className="text-2xl font-bold text-amber-500">Sauvegarde</h2>
           <button
             onClick={() => setIsOpen(false)}

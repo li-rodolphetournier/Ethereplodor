@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useGameStore } from '@/stores/gameStore';
+import { useDraggable } from '@/hooks/useDraggable';
 import * as THREE from 'three';
 
 interface MiniMapProps {
@@ -12,6 +13,10 @@ export function MiniMap({ size = 200, zoom = 0.1 }: MiniMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const playerPosition = usePlayerStore((state) => state.position);
   const enemies = useGameStore((state) => state.enemies);
+  const { ref, position, handleMouseDown } = useDraggable({
+    initialPosition: { x: window.innerWidth - size - 32, y: 16 },
+    bounds: 'window',
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -101,7 +106,15 @@ export function MiniMap({ size = 200, zoom = 0.1 }: MiniMapProps) {
   }, [size, zoom, playerPosition, enemies]);
 
   return (
-    <div className="fixed top-4 right-4 bg-black/90 border-2 border-amber-800/50 rounded-lg p-2 shadow-lg z-10">
+    <div
+      ref={ref}
+      className="fixed bg-black/90 border-2 border-amber-800/50 rounded-lg p-2 shadow-lg z-5 cursor-move select-none"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }}
+      onMouseDown={handleMouseDown}
+    >
       <div className="text-amber-500 text-xs font-bold mb-1 text-center">Mini-Map</div>
       <canvas
         ref={canvasRef}

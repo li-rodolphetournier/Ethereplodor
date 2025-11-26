@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { useQuestStore } from '@/stores/questStore';
 import { QuestStatus } from '@/game/entities/Quest';
 import { showNotification } from './Notification';
+import { useDraggable } from '@/hooks/useDraggable';
 
 export function QuestPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const { quests, startQuest, claimReward, refreshQuests } = useQuestStore();
+  const { ref, position, handleMouseDown } = useDraggable({
+    initialPosition: { x: window.innerWidth / 2 - 400, y: window.innerHeight / 2 - 400 },
+    bounds: 'window',
+  });
 
   useEffect(() => {
     refreshQuests();
@@ -82,8 +87,19 @@ export function QuestPanel() {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[90vw] max-w-4xl h-[80vh] flex flex-col">
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
+      <div
+        ref={ref}
+        className="bg-gray-900 border-2 border-amber-800 rounded-lg w-[90vw] max-w-4xl h-[80vh] flex flex-col"
+        style={{
+          position: 'absolute',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+      >
+        <div
+          className="flex justify-between items-center p-4 border-b border-gray-700 cursor-move select-none"
+          onMouseDown={handleMouseDown}
+        >
           <h2 className="text-2xl font-bold text-amber-500">Quêtes</h2>
           <button
             onClick={() => setIsOpen(false)}

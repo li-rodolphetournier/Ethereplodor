@@ -1,14 +1,27 @@
 import { usePlayerStore } from '@/stores/playerStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
+import { useDraggable } from '@/hooks/useDraggable';
 
 export function HUD() {
-  const { health, maxHealth, animationState, position } = usePlayerStore();
+  const { health, maxHealth, animationState, position: playerPosition } = usePlayerStore();
   const gold = useInventoryStore((state) => state.gold);
+  const { ref, position: dragPosition, handleMouseDown } = useDraggable({
+    initialPosition: { x: 16, y: 16 },
+    bounds: 'window',
+  });
 
   const healthPercentage = (health / maxHealth) * 100;
 
   return (
-    <div className="fixed top-4 left-4 z-10">
+    <div
+      ref={ref}
+      className="fixed z-10 cursor-move select-none"
+      style={{
+        left: `${dragPosition.x}px`,
+        top: `${dragPosition.y}px`,
+      }}
+      onMouseDown={handleMouseDown}
+    >
       {/* Barre de vie - style Diablo */}
       <div className="bg-black/90 p-4 rounded-lg border-2 border-amber-800/50 min-w-[200px] shadow-lg">
         <div className="mb-2">
@@ -31,7 +44,7 @@ export function HUD() {
 
         {/* Position (debug) */}
         <div className="text-gray-600 text-xs mt-1">
-          Pos: ({position.x.toFixed(1)}, {position.y.toFixed(1)}, {position.z.toFixed(1)})
+          Pos: ({playerPosition.x.toFixed(1)}, {playerPosition.y.toFixed(1)}, {playerPosition.z.toFixed(1)})
         </div>
 
         {/* Or - style Diablo */}

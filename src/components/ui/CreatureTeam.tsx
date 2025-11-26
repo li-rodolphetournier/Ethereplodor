@@ -1,5 +1,6 @@
 import { useCreatureStore } from '@/stores/creatureStore';
 import { Creature } from '@/game/entities/Creature';
+import { useDraggable } from '@/hooks/useDraggable';
 
 export function CreatureTeamPanel() {
   const {
@@ -10,6 +11,11 @@ export function CreatureTeamPanel() {
     addToTeam,
     removeFromTeam,
   } = useCreatureStore();
+  
+  const { ref, position, handleMouseDown } = useDraggable({
+    initialPosition: { x: window.innerWidth - 320, y: 16 },
+    bounds: 'window',
+  });
 
   const teamCreatures = activeTeam
     .map((id) => ownedCreatures.find((c) => c.id === id))
@@ -20,7 +26,15 @@ export function CreatureTeamPanel() {
   );
 
   return (
-    <div className="fixed right-4 top-4 z-10 max-h-[80vh] overflow-y-auto">
+    <div
+      ref={ref}
+      className="fixed z-20 max-h-[80vh] overflow-y-auto cursor-move select-none"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }}
+      onMouseDown={handleMouseDown}
+    >
       <div className="bg-gray-900/90 p-4 rounded-lg border border-gray-700 min-w-[280px]">
         <h2 className="text-xl font-bold mb-3 text-white">Équipe Active</h2>
 
