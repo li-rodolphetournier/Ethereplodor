@@ -10,6 +10,7 @@ import { MiniMap } from './components/ui/MiniMap';
 import { ProgressionPanel } from './components/ui/ProgressionPanel';
 import { QuestPanel } from './components/ui/QuestPanel';
 import { NotificationContainer } from './components/ui/Notification';
+import { PerfPanel } from './components/ui/PerfPanel';
 import { useItemEffects } from './hooks/useItemEffects';
 import { useGameSave } from './hooks/useGameSave';
 import { showNotification } from './components/ui/Notification';
@@ -45,6 +46,7 @@ function App() {
       <ProgressionPanel />
       <QuestPanel />
       <NotificationContainer />
+      <PerfPanel />
     </div>
   );
 }

@@ -35,7 +35,7 @@ const LEVEL_DEFINITIONS: Record<string, LevelDefinition> = {
     id: 'outdoor',
     name: 'Extérieur - Village',
     type: 'outdoor',
-    spawnPoint: [0, 1, 0],
+    spawnPoint: [0, 1.2, 0],
     doors: [
       {
         id: 'houseEntrance',
@@ -44,7 +44,7 @@ const LEVEL_DEFINITIONS: Record<string, LevelDefinition> = {
         targetSpawn: [0, 1, 0],
         triggerDistance: 2.2,
         prompt: 'Entrer dans la maison (E)',
-        showDoorMesh: true,
+        showDoorMesh: false,
       },
     ],
   },
@@ -52,7 +52,7 @@ const LEVEL_DEFINITIONS: Record<string, LevelDefinition> = {
     id: 'houseInterior',
     name: 'Intérieur - Maison',
     type: 'indoor',
-    spawnPoint: [0, 1, 0],
+    spawnPoint: [0, 1.2, 0],
     doors: [
       {
         id: 'houseExit',

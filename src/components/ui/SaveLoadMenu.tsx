@@ -31,7 +31,8 @@ export function SaveLoadMenu() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 bg-gray-900/90 p-3 rounded-lg border border-gray-700 text-white hover:bg-gray-800 transition z-10"
+        className="fixed bottom-4 left-4 bg-gray-900/90 p-3 rounded-lg border border-gray-700 text-white hover:bg-gray-800 transition z-20"
+        style={{ transform: 'translateY(-80px)' }}
       >
         💾 Sauvegarde
       </button>

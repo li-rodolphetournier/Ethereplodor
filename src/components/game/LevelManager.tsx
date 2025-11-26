@@ -1,10 +1,12 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import { RigidBody } from '@react-three/rapier';
+import { Html, useTexture } from '@react-three/drei';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useLevelStore, DoorDefinition } from '@/stores/levelStore';
 import { usePlayerStore } from '@/stores/playerStore';
+import { Labubu } from './Labubu';
+import { Environment } from './Environment';
 
 function DoorTrigger({ door }: { door: DoorDefinition }) {
   const playerPosition = usePlayerStore((state) => state.position);
@@ -66,15 +68,38 @@ function DoorTrigger({ door }: { door: DoorDefinition }) {
 }
 
 function OutdoorLevel() {
+  const stylizedHouseTextures = useTexture<{
+    map: THREE.Texture;
+    normalMap: THREE.Texture;
+    roughnessMap: THREE.Texture;
+    emissiveMap: THREE.Texture;
+  }>({
+    map: '/assets/models/textures/Stylized_House_Trim_baseColor.png',
+    normalMap: '/assets/models/textures/Stylized_House_Trim_normal.png',
+    roughnessMap: '/assets/models/textures/Stylized_House_Trim_metallicRoughness.png',
+    emissiveMap: '/assets/models/textures/Stylized_House_Trim_emissive.png',
+  });
+
+  const houseTextures = useMemo(() => {
+    Object.values(stylizedHouseTextures).forEach((texture) => {
+      if (!texture) return;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(1.5, 1.5);
+      texture.anisotropy = 8;
+      texture.flipY = false;
+      texture.needsUpdate = true;
+    });
+
+    stylizedHouseTextures.map.colorSpace = THREE.SRGBColorSpace;
+    stylizedHouseTextures.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+    return stylizedHouseTextures;
+  }, [stylizedHouseTextures]);
+
   return (
     <>
-      {/* Sol principal */}
-      <RigidBody type="fixed" position={[0, -0.5, 0]}>
-        <mesh receiveShadow castShadow>
-          <boxGeometry args={[80, 1, 80]} />
-          <meshStandardMaterial color="#2a2a1a" roughness={0.95} metalness={0.05} />
-        </mesh>
-      </RigidBody>
+      {/* Environnement complet : sol, herbe, rochers, arbres, rivière, décorations */}
+      <Environment />
 
       {/* Chemins vers la maison */}
       <RigidBody type="fixed" position={[0, 0.01, 0]}>
@@ -90,28 +115,74 @@ function OutdoorLevel() {
         </mesh>
       </RigidBody>
 
-      {/* Maison */}
-      <RigidBody type="fixed" position={[5, 1, -2]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[6, 4, 6]} />
-          <meshStandardMaterial color="#4a2a1a" roughness={0.85} />
-        </mesh>
+      {/* Maison stylisée */}
+      <RigidBody type="fixed" position={[5.5, 0, -1.4]} colliders={false}>
+        <group castShadow receiveShadow>
+          <mesh castShadow receiveShadow position={[0, 2, 0]}>
+            <boxGeometry args={[6.2, 4.2, 6.2]} />
+            <meshStandardMaterial
+              map={houseTextures.map}
+              normalMap={houseTextures.normalMap}
+              roughnessMap={houseTextures.roughnessMap}
+              metalnessMap={houseTextures.roughnessMap}
+              emissiveMap={houseTextures.emissiveMap}
+              emissive="#2a1f16"
+              emissiveIntensity={0.35}
+              roughness={0.9}
+              metalness={0.15}
+            />
+          </mesh>
+
+          <mesh castShadow position={[0, 4.8, 0]} rotation={[0, Math.PI / 4, 0]}>
+            <coneGeometry args={[5.8, 3, 4]} />
+            <meshStandardMaterial
+              map={houseTextures.map}
+              normalMap={houseTextures.normalMap}
+              roughnessMap={houseTextures.roughnessMap}
+              metalnessMap={houseTextures.roughnessMap}
+              emissiveMap={houseTextures.emissiveMap}
+              emissive="#22160f"
+              emissiveIntensity={0.3}
+              roughness={0.9}
+              metalness={0.12}
+            />
+          </mesh>
+
+          <mesh castShadow position={[0, 3.3, 0]}>
+            <boxGeometry args={[6.5, 0.5, 6.5]} />
+            <meshStandardMaterial color="#331d13" roughness={0.8} metalness={0.05} />
+          </mesh>
+
+          {/* Fenêtres */}
+          {[-1.8, 1.8].map((x) => (
+            <mesh key={`window-front-${x}`} position={[x, 2.5, 3.3]}>
+              <boxGeometry args={[1, 1.2, 0.1]} />
+              <meshStandardMaterial
+                color="#4ecdc4"
+                emissive="#4ecdc4"
+                emissiveIntensity={0.6}
+                roughness={0.2}
+              />
+            </mesh>
+          ))}
+
+          {/* Porte intégrée */}
+          <mesh position={[0.3, 1.3, 3.3]} castShadow>
+            <boxGeometry args={[1.4, 2.6, 0.15]} />
+            <meshStandardMaterial color="#2a1209" roughness={0.75} metalness={0.1} />
+          </mesh>
+          <mesh position={[0.8, 1.3, 3.38]}>
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <meshStandardMaterial color="#d4a45f" metalness={0.9} roughness={0.2} />
+          </mesh>
+        </group>
+        <CuboidCollider args={[3.1, 2.2, 3.1]} position={[0, 2, 0]} />
+        <CuboidCollider args={[2.6, 0.8, 2.6]} position={[0, 3.8, 0]} />
       </RigidBody>
 
-      {/* Toit */}
-      <RigidBody type="fixed" position={[5, 4.5, -2]}>
-        <mesh castShadow>
-          <coneGeometry args={[4.5, 2.5, 4]} />
-          <meshStandardMaterial color="#2a1a10" roughness={0.8} />
-        </mesh>
-      </RigidBody>
-
-      {/* Porte visible côté caméra */}
-      <RigidBody type="fixed" position={[5.5, 1, 1.6]} rotation={[0, Math.PI / 2, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[1, 2, 0.1]} />
-          <meshStandardMaterial color="#2a1a0a" roughness={0.8} metalness={0.1} />
-        </mesh>
+      {/* Statue Labubu */}
+      <RigidBody type="fixed" colliders="hull" position={[8, 1, -3.5]}>
+        <Labubu position={[0, 0, 0]} rotation={[0, Math.PI / 4, 0]} scale={0.008} />
       </RigidBody>
 
       {/* Lampe près de la porte */}

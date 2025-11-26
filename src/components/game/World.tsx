@@ -1,5 +1,5 @@
 import { Canvas, useThree } from '@react-three/fiber';
-import { Sky, Environment as DreiEnvironment, Html } from '@react-three/drei';
+import { Environment as DreiEnvironment, Html } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 import { IsometricCamera } from './IsometricCamera';
 import { Player } from './Player';
@@ -42,23 +42,23 @@ export function World() {
         antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.5, // Plus lumineux pour voir la scène
+        toneMappingExposure: 1.6,
       }}
       camera={{
         position: [10, 10, 10],
         fov: 50,
       }}
       tabIndex={0}
-      style={{ outline: 'none', background: '#1a1a1a' }}
+      style={{ outline: 'none', background: '#111118' }}
       onCreated={({ scene }) => {
-        scene.background = new THREE.Color('#1a1a1a');
+        scene.background = new THREE.Color('#111118');
       }}
     >
       {/* Éclairage principal */}
-      <ambientLight intensity={0.8} color="#5a5a4a" />
+      <ambientLight intensity={0.7} color="#4a4033" />
       <directionalLight
         position={[15, 20, 10]}
-        intensity={2.5}
+        intensity={2.0}
         castShadow
         shadow-mapSize-width={4096}
         shadow-mapSize-height={4096}
@@ -73,8 +73,8 @@ export function World() {
       />
 
       {/* Lumières secondaires */}
-      <directionalLight position={[-15, 12, -8]} intensity={1} color="#a0b0d3" />
-      <directionalLight position={[0, 15, 0]} intensity={0.8} color="#ffffff" />
+      <directionalLight position={[-15, 12, -8]} intensity={0.8} color="#7075a0" />
+      <directionalLight position={[0, 15, 0]} intensity={0.6} color="#e0e0ff" />
 
       {/* Lumières d'ambiance chaude */}
       <pointLight position={[0, 3, 0]} intensity={0.5} color="#8b0000" distance={25} decay={2} castShadow />
@@ -82,6 +82,8 @@ export function World() {
       <pointLight position={[10, 2, 10]} intensity={0.3} color="#ff4500" distance={20} decay={2} />
 
       <FogComponent />
+
+      {/* Ciel désactivé pour garder un fond sombre contrôlé par le clearColor */}
 
       <Physics gravity={[0, -9.81, 0]}>
         <LevelManager />
@@ -101,8 +103,6 @@ export function World() {
 
       <IsometricCamera target={playerPosition} distance={15} />
 
-      {/* On désactive le ciel afin de garder un fond sombre */}
-      {/* <Sky ... /> */}
       <DreiEnvironment preset="night" />
       <DamageNumberManager />
     </Canvas>

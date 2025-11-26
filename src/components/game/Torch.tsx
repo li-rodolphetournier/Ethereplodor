@@ -7,9 +7,16 @@ interface TorchProps {
   intensity?: number;
   color?: string;
   distance?: number;
+  castShadow?: boolean;
 }
 
-export function Torch({ position, intensity = 1.5, color = '#ff8c42', distance = 12 }: TorchProps) {
+export function Torch({
+  position,
+  intensity = 1.5,
+  color = '#ff8c42',
+  distance = 12,
+  castShadow = false,
+}: TorchProps) {
   const flameRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
   const timeRef = useRef(0);
@@ -63,7 +70,7 @@ export function Torch({ position, intensity = 1.5, color = '#ff8c42', distance =
         color={color}
         distance={distance}
         decay={2}
-        castShadow
+        castShadow={castShadow}
       />
     </group>
   );

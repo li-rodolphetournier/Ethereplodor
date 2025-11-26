@@ -129,15 +129,15 @@ export function Environment() {
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[50, 50, 64, 64]} />
           <meshStandardMaterial
-            color="#2a2a1a"
+            color="#26221b"
             roughness={0.98}
             metalness={0.02}
-            emissive="#1a1a0a"
-            emissiveIntensity={0.05}
+            emissive="#100c08"
+            emissiveIntensity={0.08}
           />
         </mesh>
         {/* Collider explicite pour le sol */}
-        <CuboidCollider args={[25, 0.1, 25]} position={[0, -0.1, 0]} />
+        <CuboidCollider args={[25, 0.3, 25]} position={[0, -0.3, 0]} />
       </RigidBody>
 
       {/* Rivière */}
@@ -356,25 +356,29 @@ export function Environment() {
         })
         .filter(Boolean)}
 
-      {/* Torches - positions stratégiques */}
-      <Torch position={[-8, 0, -8]} intensity={1.8} color="#ff8c42" distance={14} />
-      <Torch position={[8, 0, -8]} intensity={1.8} color="#ff8c42" distance={14} />
-      <Torch position={[-8, 0, 8]} intensity={1.8} color="#ff8c42" distance={14} />
-      <Torch position={[8, 0, 8]} intensity={1.8} color="#ff8c42" distance={14} />
-      <Torch position={[0, 0, -12]} intensity={2.0} color="#ff8c42" distance={16} />
-      <Torch position={[-12, 0, 0]} intensity={2.0} color="#ff8c42" distance={16} />
-      <Torch position={[12, 0, 0]} intensity={2.0} color="#ff8c42" distance={16} />
-      <Torch position={[0, 0, 12]} intensity={2.0} color="#ff8c42" distance={16} />
-      
+      {/* Torches - grandes zones extérieures */}
+      <Torch position={[-8, 0, -8]} intensity={2.2} color="#ff8c42" distance={18} />
+      <Torch position={[8, 0, -8]} intensity={2.2} color="#ff8c42" distance={18} />
+      <Torch position={[-8, 0, 8]} intensity={2.2} color="#ff8c42" distance={18} />
+      <Torch position={[8, 0, 8]} intensity={2.2} color="#ff8c42" distance={18} />
+      <Torch position={[0, 0, -12]} intensity={2.4} color="#ff8c42" distance={20} />
+      <Torch position={[-12, 0, 0]} intensity={2.4} color="#ff8c42" distance={20} />
+      <Torch position={[12, 0, 0]} intensity={2.4} color="#ff8c42" distance={20} />
+      <Torch position={[0, 0, 12]} intensity={2.4} color="#ff8c42" distance={20} />
+
       {/* Torches près des pierres tombales */}
-      <Torch position={[-5, 0, -5]} intensity={1.5} color="#ff6b35" distance={12} />
-      <Torch position={[5, 0, 5]} intensity={1.5} color="#ff6b35" distance={12} />
-      
-      {/* Torches centrales pour éclairage principal */}
-      <Torch position={[-3, 0, 0]} intensity={1.6} color="#ff8c42" distance={13} />
-      <Torch position={[3, 0, 0]} intensity={1.6} color="#ff8c42" distance={13} />
-      <Torch position={[0, 0, -3]} intensity={1.6} color="#ff8c42" distance={13} />
-      <Torch position={[0, 0, 3]} intensity={1.6} color="#ff8c42" distance={13} />
+      <Torch position={[-5, 0, -5]} intensity={2.0} color="#ff6b35" distance={16} />
+      <Torch position={[5, 0, 5]} intensity={2.0} color="#ff6b35" distance={16} />
+
+      {/* Torches centrales pour éclairage principal autour du joueur */}
+      <Torch position={[-3, 0, 0]} intensity={2.1} color="#ff8c42" distance={16} />
+      <Torch position={[3, 0, 0]} intensity={2.1} color="#ff8c42" distance={16} />
+      <Torch position={[0, 0, -3]} intensity={2.1} color="#ff8c42" distance={16} />
+      <Torch position={[0, 0, 3]} intensity={2.1} color="#ff8c42" distance={16} />
+
+      {/* Torches près de la maison */}
+      <Torch position={[5.5, 0, 1.5]} intensity={2.3} color="#ffb347" distance={18} />
+      <Torch position={[5.5, 0, -4.0]} intensity={2.0} color="#ff9c3d" distance={16} />
     </>
   );
 }

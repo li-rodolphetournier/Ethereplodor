@@ -13,6 +13,9 @@ interface EnemyProps {
   enemy: EnemyData;
 }
 
+const enemyTempDir = new THREE.Vector3();
+const enemyTempPos = new THREE.Vector3();
+
 export function Enemy({ enemy }: EnemyProps) {
   const enemyRef = useRef<any>(null);
   const meshRef = useRef<THREE.Group>(null);
@@ -83,30 +86,32 @@ export function Enemy({ enemy }: EnemyProps) {
     // Appliquer mouvement depuis l'IA
     if (enemy.state === EnemyState.CHASE || enemy.state === EnemyState.ATTACK) {
       if (playerPosition.distanceTo(enemy.position) > 0.1) {
-        const direction = playerPosition.clone().sub(enemy.position).normalize();
-        const velocity = {
-          x: direction.x * enemy.speed,
-          y: enemyRef.current.linvel().y,
-          z: direction.z * enemy.speed,
-        };
-        enemyRef.current.setLinvel(velocity);
+        enemyTempDir.copy(playerPosition).sub(enemy.position).normalize();
+        const currentVel = enemyRef.current.linvel();
+        enemyRef.current.setLinvel(
+          {
+            x: enemyTempDir.x * enemy.speed,
+            y: currentVel.y,
+            z: enemyTempDir.z * enemy.speed,
+          }
+        );
 
         // Rotation vers le joueur
-        const angle = Math.atan2(direction.x, direction.z);
+        const angle = Math.atan2(enemyTempDir.x, enemyTempDir.z);
         if (meshRef.current) {
           meshRef.current.rotation.y = angle;
         }
       }
     } else if (enemy.state === EnemyState.PATROL && enemy.patrolTarget) {
-      const direction = enemy.patrolTarget.clone().sub(enemy.position).normalize();
-      const velocity = {
-        x: direction.x * enemy.speed * 0.5,
-        y: enemyRef.current.linvel().y,
-        z: direction.z * enemy.speed * 0.5,
-      };
-      enemyRef.current.setLinvel(velocity);
+      enemyTempDir.copy(enemy.patrolTarget).sub(enemy.position).normalize();
+      const currentVel = enemyRef.current.linvel();
+      enemyRef.current.setLinvel({
+        x: enemyTempDir.x * enemy.speed * 0.5,
+        y: currentVel.y,
+        z: enemyTempDir.z * enemy.speed * 0.5,
+      });
 
-      const angle = Math.atan2(direction.x, direction.z);
+      const angle = Math.atan2(enemyTempDir.x, enemyTempDir.z);
       if (meshRef.current) {
         meshRef.current.rotation.y = angle;
       }
