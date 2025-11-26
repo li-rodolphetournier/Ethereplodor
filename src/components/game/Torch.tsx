@@ -9,89 +9,56 @@ interface TorchProps {
   distance?: number;
 }
 
-export function Torch({ 
-  position, 
-  intensity = 1.5, 
-  color = '#ff8c42',
-  distance = 12 
-}: TorchProps) {
+export function Torch({ position, intensity = 1.5, color = '#ff8c42', distance = 12 }: TorchProps) {
   const flameRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
+  const timeRef = useRef(0);
 
-  // Animation de la flamme
   useFrame((_state, delta) => {
+    timeRef.current += delta;
+
+    // Animation de la flamme
     if (flameRef.current) {
-      // Oscillation de la flamme
-      const time = Date.now() * 0.003;
-      flameRef.current.scale.y = 1 + Math.sin(time) * 0.2;
-      flameRef.current.scale.x = 1 + Math.cos(time * 1.3) * 0.15;
-      flameRef.current.rotation.z = Math.sin(time * 0.5) * 0.1;
+      const flicker = Math.sin(timeRef.current * 10) * 0.1 + Math.cos(timeRef.current * 7) * 0.05;
+      flameRef.current.scale.y = 1 + flicker;
+      flameRef.current.position.y = position[1] + 0.8 + Math.sin(timeRef.current * 8) * 0.05;
     }
 
-    // Variation de l'intensité de la lumière
+    // Variation d'intensité de la lumière
     if (lightRef.current) {
-      const flicker = 1 + (Math.random() - 0.5) * 0.15;
-      lightRef.current.intensity = intensity * flicker;
+      const intensityVariation = 0.2 + Math.sin(timeRef.current * 6) * 0.1;
+      lightRef.current.intensity = intensity * (0.8 + intensityVariation);
     }
   });
 
   return (
     <group position={position}>
-      {/* Support de la torche - poteau */}
-      <mesh castShadow position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 1, 8]} />
+      {/* Bâton de torche */}
+      <mesh castShadow receiveShadow position={[0, 0.4, 0]}>
+        <cylinderGeometry args={[0.05, 0.05, 0.8, 8]} />
         <meshStandardMaterial
-          color="#2d2d2d"
-          metalness={0.3}
-          roughness={0.7}
+          color="#4a3728"
+          roughness={0.9}
+          metalness={0.1}
         />
       </mesh>
 
-      {/* Tête de la torche - support métallique */}
-      <mesh castShadow position={[0, 1.1, 0]}>
-        <boxGeometry args={[0.15, 0.15, 0.15]} />
+      {/* Flamme */}
+      <mesh ref={flameRef} position={[0, 0.8, 0]}>
+        <coneGeometry args={[0.15, 0.4, 8]} />
         <meshStandardMaterial
-          color="#1a1a1a"
-          metalness={0.8}
-          roughness={0.2}
-        />
-      </mesh>
-
-      {/* Flamme - partie principale */}
-      <mesh
-        ref={flameRef}
-        position={[0, 1.3, 0]}
-        castShadow={false}
-      >
-        <coneGeometry args={[0.12, 0.4, 8]} />
-        <meshBasicMaterial
           color={color}
+          emissive={color}
+          emissiveIntensity={1.5}
           transparent
           opacity={0.8}
-          emissive={color}
-          emissiveIntensity={2}
         />
       </mesh>
 
-      {/* Flamme - partie centrale plus brillante */}
-      <mesh
-        position={[0, 1.35, 0]}
-        castShadow={false}
-      >
-        <coneGeometry args={[0.06, 0.25, 6]} />
-        <meshBasicMaterial
-          color="#ffff99"
-          transparent
-          opacity={0.9}
-          emissive="#ffff99"
-          emissiveIntensity={3}
-        />
-      </mesh>
-
-      {/* Point de lumière */}
+      {/* Lumière point */}
       <pointLight
         ref={lightRef}
-        position={[0, 1.3, 0]}
+        position={[0, 0.8, 0]}
         intensity={intensity}
         color={color}
         distance={distance}
@@ -101,4 +68,3 @@ export function Torch({
     </group>
   );
 }
-

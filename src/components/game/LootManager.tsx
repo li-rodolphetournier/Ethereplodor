@@ -6,6 +6,8 @@ import { LootDrop } from './LootDrop';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { useGameStore } from '@/stores/gameStore';
+import { showNotification } from '@/components/ui/Notification';
+import { questSystem } from '@/game/systems/QuestSystem';
 
 export function LootManager() {
   const playerPosition = usePlayerStore((state) => state.position);
@@ -29,6 +31,8 @@ export function LootManager() {
           addGold(drop.item.value);
         } else {
           addItem(drop.item, 1);
+          // Mettre à jour la progression des quêtes
+          questSystem.onItemCollected(drop.item.id);
         }
         removeLootDrop(drop.id);
       }

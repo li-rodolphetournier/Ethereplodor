@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { ItemType, ItemRarity } from '@/game/entities/Item';
+import { showNotification } from './Notification';
 
 export function Inventory() {
   const [isOpen, setIsOpen] = useState(false);
+  const [filter, setFilter] = useState<'all' | ItemType>('all');
 
   // Ouvrir/fermer avec la touche I
   useEffect(() => {
@@ -36,6 +38,17 @@ export function Inventory() {
       [ItemRarity.RARE]: 'text-blue-400',
       [ItemRarity.EPIC]: 'text-purple-400',
       [ItemRarity.LEGENDARY]: 'text-yellow-400',
+    };
+    return colors[rarity] || colors[ItemRarity.COMMON];
+  };
+
+  const getRarityBorderColor = (rarity: ItemRarity): string => {
+    const colors = {
+      [ItemRarity.COMMON]: '#6b7280',
+      [ItemRarity.UNCOMMON]: '#22c55e',
+      [ItemRarity.RARE]: '#3b82f6',
+      [ItemRarity.EPIC]: '#a855f7',
+      [ItemRarity.LEGENDARY]: '#fbbf24',
     };
     return colors[rarity] || colors[ItemRarity.COMMON];
   };
@@ -115,73 +128,108 @@ export function Inventory() {
           </div>
         </div>
 
+        {/* Filtres */}
+        <div className="p-4 border-b border-gray-700">
+          <div className="flex gap-2 flex-wrap">
+            {(['all', 'weapon', 'armor', 'consumable', 'material'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilter(type === 'all' ? 'all' : type)}
+                className={`px-3 py-1 rounded text-sm font-semibold transition ${
+                  filter === type
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {type === 'all' ? 'Tous' : type}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Items */}
         <div className="flex-1 overflow-y-auto p-4">
-          <h3 className="text-lg font-semibold text-white mb-3">Items ({items.length}/{maxSlots})</h3>
+          <h3 className="text-lg font-semibold text-white mb-3">
+            Items ({items.length}/{maxSlots})
+          </h3>
           {items.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
               Inventaire vide
             </div>
           ) : (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-              {items.map((invItem, index) => (
-                <div
-                  key={`${invItem.item.id}-${index}`}
-                  className="bg-gray-800 p-2 rounded border border-gray-700 hover:border-gray-600 cursor-pointer relative group"
-                  onClick={() => {
-                    if (invItem.item.type === ItemType.CONSUMABLE) {
-                      const used = useItem(invItem.item.id);
-                      if (used && invItem.item.stats?.hp) {
-                        // Potion de soin utilisée - le système de jeu gérera la guérison
-                        console.log(`Utilisé: ${invItem.item.name}`);
-                      }
-                    } else if (invItem.item.type === ItemType.WEAPON) {
-                      useItem(invItem.item.id);
-                      console.log(`Équipé: ${invItem.item.name}`);
-                    } else if (invItem.item.type === ItemType.ARMOR) {
-                      useItem(invItem.item.id);
-                      console.log(`Équipé: ${invItem.item.name}`);
-                    }
-                  }}
-                >
+              {items
+                .filter((invItem) => filter === 'all' || invItem.item.type === filter)
+                .map((invItem, index) => (
                   <div
-                    className="w-full aspect-square rounded mb-1 flex items-center justify-center text-white font-bold text-xs"
-                    style={{ backgroundColor: invItem.item.color }}
+                    key={`${invItem.item.id}-${index}`}
+                    className="bg-gray-800 p-2 rounded border-2 border-gray-700 hover:border-amber-600/50 cursor-pointer relative group transition"
+                    onClick={() => {
+                      if (invItem.item.type === ItemType.CONSUMABLE) {
+                        const used = useItem(invItem.item.id);
+                        if (used && invItem.item.stats?.hp) {
+                          showNotification(`Utilisé: ${invItem.item.name}`, 'info');
+                        }
+                      } else if (invItem.item.type === ItemType.WEAPON) {
+                        useItem(invItem.item.id);
+                        showNotification(`Équipé: ${invItem.item.name}`, 'success');
+                      } else if (invItem.item.type === ItemType.ARMOR) {
+                        useItem(invItem.item.id);
+                        showNotification(`Équipé: ${invItem.item.name}`, 'success');
+                      }
+                    }}
                   >
-                    {invItem.item.name.charAt(0)}
-                  </div>
-                  <div className="text-xs text-white truncate">{invItem.item.name}</div>
-                  {invItem.quantity > 1 && (
-                    <div className="absolute top-1 right-1 bg-blue-600 text-white text-xs px-1 rounded">
-                      {invItem.quantity}
+                    <div
+                      className="w-full aspect-square rounded mb-1 flex items-center justify-center text-white font-bold text-xs border-2"
+                      style={{
+                        backgroundColor: invItem.item.color,
+                        borderColor: getRarityBorderColor(invItem.item.rarity),
+                      }}
+                    >
+                      {invItem.item.name.charAt(0)}
                     </div>
-                  )}
-                  <div className={`text-xs ${getRarityColor(invItem.item.rarity)}`}>
-                    {invItem.item.rarity}
-                  </div>
-                  {/* Tooltip */}
-                  <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-800 border border-gray-700 rounded p-2 text-xs text-white z-10 min-w-[200px]">
-                    <div className="font-semibold mb-1">{invItem.item.name}</div>
-                    <div className="text-gray-400 mb-1">{invItem.item.description}</div>
-                    {invItem.item.stats && (
-                      <div className="mt-1">
-                        {invItem.item.stats.attack && (
-                          <div>Attaque: +{invItem.item.stats.attack}</div>
-                        )}
-                        {invItem.item.stats.defense && (
-                          <div>Défense: +{invItem.item.stats.defense}</div>
-                        )}
-                        {invItem.item.stats.hp && (
-                          <div>HP: +{invItem.item.stats.hp}</div>
-                        )}
+                    <div className="text-xs text-white truncate font-semibold">
+                      {invItem.item.name}
+                    </div>
+                    {invItem.quantity > 1 && (
+                      <div className="absolute top-1 right-1 bg-amber-600 text-white text-xs px-1 rounded font-bold">
+                        {invItem.quantity}
                       </div>
                     )}
-                    <div className="text-yellow-400 mt-1">
-                      Valeur: {invItem.item.value} or
+                    <div className={`text-xs font-semibold ${getRarityColor(invItem.item.rarity)}`}>
+                      {invItem.item.rarity}
+                    </div>
+                    {/* Tooltip amélioré */}
+                    <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-black/95 border-2 border-amber-800 rounded p-3 text-xs text-white z-10 min-w-[250px] shadow-xl">
+                      <div className={`font-bold mb-1 text-lg ${getRarityColor(invItem.item.rarity)}`}>
+                        {invItem.item.name}
+                      </div>
+                      <div className="text-amber-400 mb-2 text-xs">{invItem.item.description}</div>
+                      {invItem.item.stats && (
+                        <div className="mt-2 space-y-1">
+                          {invItem.item.stats.attack && (
+                            <div className="text-red-400">⚔️ Attaque: +{invItem.item.stats.attack}</div>
+                          )}
+                          {invItem.item.stats.defense && (
+                            <div className="text-blue-400">🛡️ Défense: +{invItem.item.stats.defense}</div>
+                          )}
+                          {invItem.item.stats.hp && (
+                            <div className="text-green-400">❤️ HP: +{invItem.item.stats.hp}</div>
+                          )}
+                          {invItem.item.stats.speed && (
+                            <div className="text-yellow-400">⚡ Vitesse: +{invItem.item.stats.speed}</div>
+                          )}
+                        </div>
+                      )}
+                      <div className="text-amber-500 mt-2 font-bold border-t border-amber-800 pt-2">
+                        💰 Valeur: {invItem.item.value.toLocaleString()} or
+                      </div>
+                      <div className={`text-xs mt-1 ${getRarityColor(invItem.item.rarity)}`}>
+                        Rareté: {invItem.item.rarity.toUpperCase()}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>

@@ -136,6 +136,8 @@ export function Player() {
 
             if (newHp <= 0) {
               console.log(`Enemy ${enemy.id} vaincu!`);
+              // Mettre à jour la progression des quêtes
+              questSystem.onEnemyKilled();
             }
           }
         });

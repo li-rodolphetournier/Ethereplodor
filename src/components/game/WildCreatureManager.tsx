@@ -6,6 +6,8 @@ import { Creature } from './Creature';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useCreatureStore } from '@/stores/creatureStore';
 import { captureSystem } from '@/game/systems/CaptureSystem';
+import { showNotification } from '@/components/ui/Notification';
+import { questSystem } from '@/game/systems/QuestSystem';
 
 export function WildCreatureManager() {
   const playerPosition = usePlayerStore((state) => state.position);
@@ -47,11 +49,13 @@ export function WildCreatureManager() {
         const result = captureSystem.attemptCapture(closestCreature.creature, 'basic');
 
         if (result.success) {
-          console.log(`🎉 Capture réussie! ${closestCreature.creature.name} a été capturé!`);
+          showNotification(`🎉 Capture réussie! ${closestCreature.creature.name} a été capturé!`, 'success');
           captureCreature(closestCreature.creature);
           wildCreatureSpawn.removeWildCreature(closestCreature.creature.id);
+          // Mettre à jour la progression des quêtes
+          questSystem.onCreatureCaptured();
         } else {
-          console.log(`❌ Capture échouée! ${closestCreature.creature.name} s'est échappé! (Chance: ${(result.chance * 100).toFixed(1)}%)`);
+          showNotification(`❌ Capture échouée! ${closestCreature.creature.name} s'est échappé!`, 'error');
         }
       } else {
         console.log('Aucune créature sauvage à proximité');

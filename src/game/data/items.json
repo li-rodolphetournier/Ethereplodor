@@ -169,6 +169,69 @@
     "stackSize": 99,
     "value": 200,
     "color": "#8b5cf6"
+  },
+  {
+    "id": "sword_legendary",
+    "name": "Lame des Ténèbres",
+    "description": "Une épée légendaire maudite",
+    "type": "weapon",
+    "rarity": "legendary",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 5000,
+    "stats": {
+      "attack": 100,
+      "special": 50
+    },
+    "color": "#fbbf24"
+  },
+  {
+    "id": "armor_legendary",
+    "name": "Armure du Chaos",
+    "description": "Armure légendaire des anciens",
+    "type": "armor",
+    "rarity": "legendary",
+    "stackable": false,
+    "stackSize": 1,
+    "value": 6000,
+    "stats": {
+      "defense": 80,
+      "hp": 200
+    },
+    "color": "#f59e0b"
+  },
+  {
+    "id": "ball_basic",
+    "name": "Balle Basique",
+    "description": "Balle de capture standard",
+    "type": "ball",
+    "rarity": "common",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 20,
+    "color": "#9ca3af"
+  },
+  {
+    "id": "ball_super",
+    "name": "Super Balle",
+    "description": "Balle de capture améliorée",
+    "type": "ball",
+    "rarity": "uncommon",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 100,
+    "color": "#22c55e"
+  },
+  {
+    "id": "ball_ultra",
+    "name": "Ultra Balle",
+    "description": "Balle de capture ultime",
+    "type": "ball",
+    "rarity": "rare",
+    "stackable": true,
+    "stackSize": 99,
+    "value": 500,
+    "color": "#3b82f6"
   }
 ]
 

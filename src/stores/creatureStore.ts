@@ -12,7 +12,8 @@ interface CreatureStore {
   addToTeam: (creatureId: string) => void;
   removeFromTeam: (creatureId: string) => void;
   selectCreature: (creatureId: string) => void;
-  levelUpCreature: (creatureId: string, expGained: number) => void;
+  levelUpCreature: (creatureId: string, expGained?: number) => void;
+  updateCreature: (id: string, updatedCreature: Creature) => void;
   getCreature: (creatureId: string) => Creature | undefined;
   getTeamCreatures: () => Creature[];
 }
@@ -57,7 +58,7 @@ export const useCreatureStore = create<CreatureStore>()(
 
       selectCreature: (creatureId) => set({ selectedCreature: creatureId }),
 
-      levelUpCreature: (creatureId, expGained) =>
+      levelUpCreature: (creatureId, expGained = 0) =>
         set((state) => {
           const creatures = state.ownedCreatures.map((c) => {
             if (c.id === creatureId) {
@@ -73,6 +74,12 @@ export const useCreatureStore = create<CreatureStore>()(
           });
           return { ownedCreatures: creatures };
         }),
+      updateCreature: (id, updatedCreature) =>
+        set((state) => ({
+          ownedCreatures: state.ownedCreatures.map((c) =>
+            c.id === id ? updatedCreature : c
+          ),
+        })),
 
       getCreature: (creatureId) => {
         return get().ownedCreatures.find((c) => c.id === creatureId);

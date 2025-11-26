@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { RigidBody, CuboidCollider, BallCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { Torch } from './Torch';
 
@@ -9,6 +9,11 @@ export function Environment() {
   const treeRef = useRef<THREE.InstancedMesh>(null);
   const treeTrunkRef = useRef<THREE.InstancedMesh>(null);
   const tombstoneRef = useRef<THREE.InstancedMesh>(null);
+  
+  // Stocker les positions des arbres, roches et pierres tombales pour les colliders
+  const treePositionsRef = useRef<Array<[number, number]>>([]);
+  const rockPositionsRef = useRef<Array<[number, number, number]>>([]);
+  const tombstonePositionsRef = useRef<Array<[number, number]>>([]);
 
   // Créer des instances pour l'herbe sombre
   useEffect(() => {
@@ -33,8 +38,9 @@ export function Environment() {
   // Créer des rochers sombres
   useEffect(() => {
     if (rockRef.current) {
-      const count = 25;
+      const count = 35;
       const matrix = new THREE.Matrix4();
+      const positions: Array<[number, number, number]> = [];
 
       for (let i = 0; i < count; i++) {
         const x = (Math.random() - 0.5) * 40;
@@ -45,16 +51,19 @@ export function Environment() {
         matrix.makeScale(scale, scale, scale);
         matrix.setPosition(x, y, z);
         rockRef.current.setMatrixAt(i, matrix);
+        positions.push([x, y + 0.25, z]);
       }
       rockRef.current.instanceMatrix.needsUpdate = true;
+      rockPositionsRef.current = positions;
     }
   }, []);
 
   // Créer des arbres avec feuillage vert
   useEffect(() => {
-    if (treeRef.current) {
+    if (treeRef.current && treeTrunkRef.current) {
       const count = 25;
       const matrix = new THREE.Matrix4();
+      const positions: Array<[number, number]> = [];
       let index = 0;
 
       for (let i = 0; i < count * 2; i++) {
@@ -66,39 +75,24 @@ export function Environment() {
         
         const y = 0;
         const scale = Math.random() * 0.5 + 0.8;
+        const trunkScale = Math.random() * 0.3 + 0.7;
 
+        // Feuillage
         matrix.makeScale(scale, scale, scale);
         matrix.setPosition(x, y, z);
         treeRef.current.setMatrixAt(index, matrix);
-        index++;
-      }
-      treeRef.current.instanceMatrix.needsUpdate = true;
-    }
-  }, []);
-
-  // Créer des troncs d'arbres
-  useEffect(() => {
-    if (treeTrunkRef.current) {
-      const count = 25;
-      const matrix = new THREE.Matrix4();
-      let index = 0;
-
-      for (let i = 0; i < count * 2; i++) {
-        const x = (Math.random() - 0.5) * 45;
-        const z = (Math.random() - 0.5) * 45;
-        // Éviter la rivière
-        if (Math.abs(x) < 5) continue;
-        if (index >= count) break;
         
-        const y = 0;
-        const scale = Math.random() * 0.3 + 0.7;
-
-        matrix.makeScale(scale, scale, scale);
-        matrix.setPosition(x, y, z);
+        // Tronc
+        matrix.makeScale(trunkScale, trunkScale, trunkScale);
         treeTrunkRef.current.setMatrixAt(index, matrix);
+        
+        positions.push([x, z]);
         index++;
       }
+      
+      treeRef.current.instanceMatrix.needsUpdate = true;
       treeTrunkRef.current.instanceMatrix.needsUpdate = true;
+      treePositionsRef.current = positions;
     }
   }, []);
 
@@ -107,6 +101,7 @@ export function Environment() {
     if (tombstoneRef.current) {
       const count = 8;
       const matrix = new THREE.Matrix4();
+      const positions: Array<[number, number]> = [];
 
       for (let i = 0; i < count; i++) {
         const x = (Math.random() - 0.5) * 35;
@@ -117,8 +112,10 @@ export function Environment() {
         matrix.makeScale(scale, scale, scale);
         matrix.setPosition(x, y, z);
         tombstoneRef.current.setMatrixAt(i, matrix);
+        positions.push([x, z]);
       }
       tombstoneRef.current.instanceMatrix.needsUpdate = true;
+      tombstonePositionsRef.current = positions;
     }
   }, []);
 
@@ -172,7 +169,7 @@ export function Environment() {
         />
       </instancedMesh>
 
-      {/* Rochers avec couleurs variées */}
+      {/* Rochers avec couleurs variées - avec collisions */}
       <instancedMesh
         ref={rockRef}
         args={[undefined, undefined, 35]}
@@ -187,7 +184,14 @@ export function Environment() {
         />
       </instancedMesh>
       
-      {/* Rochers supplémentaires avec couleurs différentes */}
+      {/* Colliders pour les roches instanciées */}
+      {rockPositionsRef.current && rockPositionsRef.current.length > 0 && rockPositionsRef.current.map(([x, y, z], i) => (
+        <RigidBody key={`rock-collider-${i}`} type="fixed" position={[x, y, z]}>
+          <BallCollider args={[0.5]} />
+        </RigidBody>
+      ))}
+      
+      {/* Rochers supplémentaires avec couleurs différentes - avec collisions */}
       {Array.from({ length: 20 })
         .map((_, i) => {
           const x = (Math.random() - 0.5) * 45;
@@ -198,20 +202,25 @@ export function Environment() {
           const colors = ['#7a7a7a', '#8b6b4a', '#6b5a4a', '#5a5a5a'];
           const color = colors[Math.floor(Math.random() * colors.length)];
           return (
-            <mesh
+            <RigidBody
               key={`rock-${i}`}
+              type="fixed"
               position={[x, 0.25, z]}
-              scale={[scale, scale * 0.8, scale]}
-              castShadow
-              receiveShadow
             >
-              <dodecahedronGeometry args={[0.6, 0]} />
-              <meshStandardMaterial
-                color={color}
-                roughness={0.95}
-                metalness={0.1}
-              />
-            </mesh>
+              <mesh
+                scale={[scale, scale * 0.8, scale]}
+                castShadow
+                receiveShadow
+              >
+                <dodecahedronGeometry args={[0.6, 0]} />
+                <meshStandardMaterial
+                  color={color}
+                  roughness={0.95}
+                  metalness={0.1}
+                />
+              </mesh>
+              <BallCollider args={[0.6 * scale]} />
+            </RigidBody>
           );
         })
         .filter(Boolean)}
@@ -245,6 +254,13 @@ export function Environment() {
           metalness={0.1}
         />
       </instancedMesh>
+      
+      {/* Colliders pour les arbres */}
+      {treePositionsRef.current && treePositionsRef.current.length > 0 && treePositionsRef.current.map(([x, z], i) => (
+        <RigidBody key={`tree-collider-${i}`} type="fixed" position={[x, 0.6, z]}>
+          <CuboidCollider args={[0.2, 0.6, 0.2]} />
+        </RigidBody>
+      ))}
 
       {/* Pierres tombales */}
       <instancedMesh
@@ -260,6 +276,13 @@ export function Environment() {
           metalness={0.1}
         />
       </instancedMesh>
+      
+      {/* Colliders pour les pierres tombales */}
+      {tombstonePositionsRef.current && tombstonePositionsRef.current.length > 0 && tombstonePositionsRef.current.map(([x, z], i) => (
+        <RigidBody key={`tombstone-collider-${i}`} type="fixed" position={[x, 0.3, z]}>
+          <CuboidCollider args={[0.2, 0.3, 0.05]} />
+        </RigidBody>
+      ))}
 
       {/* Pierres décoratives avec couleurs variées */}
       {Array.from({ length: 50 })

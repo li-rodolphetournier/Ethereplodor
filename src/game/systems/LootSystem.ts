@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { Item, ItemRarity } from '../entities/Item';
 import itemsData from '../data/items.json';
 
+function generateId(): string {
+  return `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 export interface LootDrop {
   item: Item;
   position: THREE.Vector3;
@@ -31,15 +35,95 @@ export class LootSystem {
       }
     }
 
-    // Drop d'item selon la rareté
-    if (Math.random() < dropChance) {
-      const item = this.generateRandomItem(enemyLevel);
-      if (item) {
-        drops.push(this.createLootDrop(item, position));
+    // Drop d'item selon la rareté (nouveau système)
+    const rarityChances = this.getRarityChances(enemyLevel);
+    const itemCount = 1 + Math.floor(Math.random() * 3); // 1-3 items
+
+    for (let i = 0; i < itemCount; i++) {
+      if (Math.random() < dropChance) {
+        const rarity = this.rollRarity(rarityChances);
+        const item = this.generateItemOfRarity(rarity, enemyLevel);
+        if (item) {
+          drops.push(this.createLootDrop(item, position));
+        }
       }
     }
 
     return drops;
+  }
+
+  private getRarityChances(enemyLevel: number): Record<ItemRarity, number> {
+    const baseLegendary = 0.01;
+    const levelBonus = enemyLevel * 0.001;
+    return {
+      [ItemRarity.COMMON]: 0.60,
+      [ItemRarity.UNCOMMON]: 0.25,
+      [ItemRarity.RARE]: 0.10,
+      [ItemRarity.EPIC]: 0.04,
+      [ItemRarity.LEGENDARY]: Math.min(0.1, baseLegendary + levelBonus),
+    };
+  }
+
+  private rollRarity(chances: Record<ItemRarity, number>): ItemRarity {
+    const roll = Math.random();
+    let cumulative = 0;
+
+    for (const [rarity, chance] of Object.entries(chances)) {
+      cumulative += chance;
+      if (roll <= cumulative) return rarity as ItemRarity;
+    }
+
+    return ItemRarity.COMMON;
+  }
+
+  private generateItemOfRarity(rarity: ItemRarity, level: number): Item | null {
+    const allItems = itemsData as Item[];
+    
+    // Filtrer par rareté
+    const rarityItems = allItems.filter((item) => item.rarity === rarity);
+    
+    if (rarityItems.length === 0) {
+      // Fallback sur common si pas d'items de cette rareté
+      const commonItems = allItems.filter((item) => item.rarity === ItemRarity.COMMON);
+      if (commonItems.length === 0) return null;
+      const baseItem = commonItems[Math.floor(Math.random() * commonItems.length)] as Item;
+      return this.scaleItemStats(baseItem, rarity, level);
+    }
+
+    const baseItem = rarityItems[Math.floor(Math.random() * rarityItems.length)] as Item;
+    return this.scaleItemStats(baseItem, rarity, level);
+  }
+
+  private scaleItemStats(baseItem: Item, rarity: ItemRarity, level: number): Item {
+    const statMultipliers = {
+      [ItemRarity.COMMON]: 1.0,
+      [ItemRarity.UNCOMMON]: 1.3,
+      [ItemRarity.RARE]: 1.6,
+      [ItemRarity.EPIC]: 2.0,
+      [ItemRarity.LEGENDARY]: 2.5,
+    };
+
+    const multiplier = statMultipliers[rarity];
+    const levelMultiplier = 1 + (level - 1) * 0.1;
+
+    const scaledItem: Item = {
+      ...baseItem,
+      id: generateId(),
+      value: Math.floor(baseItem.value * multiplier * levelMultiplier),
+    };
+
+    // Améliorer les stats si présentes
+    if (scaledItem.stats) {
+      scaledItem.stats = {
+        attack: scaledItem.stats.attack ? Math.floor((scaledItem.stats.attack || 0) * multiplier * levelMultiplier) : undefined,
+        defense: scaledItem.stats.defense ? Math.floor((scaledItem.stats.defense || 0) * multiplier * levelMultiplier) : undefined,
+        hp: scaledItem.stats.hp ? Math.floor((scaledItem.stats.hp || 0) * multiplier * levelMultiplier) : undefined,
+        speed: scaledItem.stats.speed ? Math.floor((scaledItem.stats.speed || 0) * multiplier * levelMultiplier) : undefined,
+        special: scaledItem.stats.special ? Math.floor((scaledItem.stats.special || 0) * multiplier * levelMultiplier) : undefined,
+      };
+    }
+
+    return scaledItem;
   }
 
   private generateRandomItem(level: number): Item | null {

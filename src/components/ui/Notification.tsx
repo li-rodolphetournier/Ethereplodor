@@ -26,6 +26,10 @@ export function addNotification(notification: Omit<Notification, 'id'>): void {
   }, duration);
 }
 
+export function showNotification(message: string, type: Notification['type']): void {
+  addNotification({ message, type });
+}
+
 export function NotificationContainer() {
   const [, forceUpdate] = useState(0);
 

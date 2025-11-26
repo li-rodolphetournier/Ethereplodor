@@ -50,6 +50,9 @@ export function HUD() {
           <div>C : Capturer créature (proche)</div>
           <div>I : Ouvrir inventaire</div>
           <div>B : Ouvrir magasin</div>
+          <div>P : Progression créatures</div>
+          <div>Q : Quêtes</div>
+          <div>F5 : Sauvegarder</div>
         </div>
       </div>
     </div>
