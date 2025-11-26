@@ -126,7 +126,7 @@ export const useInventoryStore = create<InventoryState>()(
               return false;
             }
             const healed = Math.min(item.stats.hp, missingHp);
-            playerStore.heal(item.stats.hp);
+            playerStore.heal(healed);
             consumed = true;
             showNotification(`+${healed} HP`, 'success');
           }

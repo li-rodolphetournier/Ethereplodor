@@ -18,15 +18,17 @@ export function useDraggable(options: UseDraggableOptions = {}) {
     const handleMouseMove = (e: MouseEvent) => {
       if (!elementRef.current) return;
 
-      const rect = elementRef.current.getBoundingClientRect();
+      // Calculer le delta depuis la dernière position de la souris
       const deltaX = e.clientX - dragStartPos.current.x;
       const deltaY = e.clientY - dragStartPos.current.y;
 
-      let newX = rect.left + deltaX;
-      let newY = rect.top + deltaY;
+      // Utiliser la position actuelle du state, pas rect.left/rect.top
+      let newX = position.x + deltaX;
+      let newY = position.y + deltaY;
 
       // Appliquer les limites
       if (bounds === 'window') {
+        const rect = elementRef.current.getBoundingClientRect();
         const maxX = window.innerWidth - rect.width;
         const maxY = window.innerHeight - rect.height;
         newX = Math.max(0, Math.min(newX, maxX));
@@ -34,6 +36,7 @@ export function useDraggable(options: UseDraggableOptions = {}) {
       }
 
       setPosition({ x: newX, y: newY });
+      // Mettre à jour la position de référence pour le prochain delta
       dragStartPos.current = { x: e.clientX, y: e.clientY };
     };
 
@@ -48,7 +51,7 @@ export function useDraggable(options: UseDraggableOptions = {}) {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, position, bounds]);
+  }, [isDragging, bounds, position.x, position.y]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     // Vérifier si on clique sur un élément interactif (bouton, input, etc.)

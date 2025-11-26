@@ -49,10 +49,14 @@ export function Enemy({ enemy }: EnemyProps) {
     if (enemy.state === EnemyState.DEAD || enemy.hp <= 0) {
       // Animation de mort dramatique style Diablo IV
       if (meshRef.current) {
+        // Utiliser un taux de réduction basé sur le temps écoulé, pas sur delta
+        // Réduction de 50% par seconde (indépendant du framerate)
+        const shrinkRate = 0.5; // 50% par seconde
+        const scaleReduction = Math.pow(1 - shrinkRate, delta);
         meshRef.current.rotation.x += delta * 3;
         meshRef.current.rotation.z += delta * 1.5;
         meshRef.current.position.y -= delta * 3;
-        meshRef.current.scale.multiplyScalar(1 - delta * 0.5);
+        meshRef.current.scale.multiplyScalar(scaleReduction);
         if (meshRef.current.position.y < -5) {
           removeEnemy(enemy.id);
         }

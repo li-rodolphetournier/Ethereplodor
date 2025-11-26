@@ -40,8 +40,11 @@ export function WildCreatureManager() {
       let closestDistance = Infinity;
 
       for (const creature of wildCreatures) {
-        const creaturePos = creature.position || new THREE.Vector3(0, 0, 0);
-        const distance = playerPos.distanceTo(creaturePos);
+        // Ignorer les créatures sans position définie
+        if (!creature.position) {
+          continue;
+        }
+        const distance = playerPos.distanceTo(creature.position);
 
         if (distance < 3 && distance < closestDistance) {
           closestCreature = creature;
