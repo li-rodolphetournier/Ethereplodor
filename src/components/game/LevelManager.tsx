@@ -192,47 +192,121 @@ function OutdoorLevel() {
 }
 
 function IndoorLevel() {
+  const indoorTextures = useTexture<{
+    baseColor: THREE.Texture;
+    normalMap: THREE.Texture;
+    roughnessMap: THREE.Texture;
+  }>({
+    baseColor: '/assets/models/textures/Stylized_House_Trim_baseColor.png',
+    normalMap: '/assets/models/textures/Stylized_House_Trim_normal.png',
+    roughnessMap: '/assets/models/textures/Stylized_House_Trim_metallicRoughness.png',
+  });
+
+  const processedTextures = useMemo(() => {
+    indoorTextures.baseColor.wrapS = indoorTextures.baseColor.wrapT = THREE.RepeatWrapping;
+    indoorTextures.normalMap.wrapS = indoorTextures.normalMap.wrapT = THREE.RepeatWrapping;
+    indoorTextures.roughnessMap.wrapS = indoorTextures.roughnessMap.wrapT = THREE.RepeatWrapping;
+
+    indoorTextures.baseColor.repeat.set(3, 3);
+    indoorTextures.normalMap.repeat.set(3, 3);
+    indoorTextures.roughnessMap.repeat.set(3, 3);
+
+    indoorTextures.baseColor.anisotropy = 8;
+    indoorTextures.normalMap.anisotropy = 8;
+    indoorTextures.roughnessMap.anisotropy = 8;
+
+    indoorTextures.baseColor.colorSpace = THREE.SRGBColorSpace;
+
+    indoorTextures.baseColor.needsUpdate = true;
+    indoorTextures.normalMap.needsUpdate = true;
+    indoorTextures.roughnessMap.needsUpdate = true;
+
+    return indoorTextures;
+  }, [indoorTextures]);
+
   return (
     <>
-      {/* Sol intérieur */}
+      {/* Sol intérieur texturé */}
       <RigidBody type="fixed" position={[0, -0.1, -3]}>
         <mesh receiveShadow>
           <boxGeometry args={[12, 0.2, 12]} />
-          <meshStandardMaterial color="#3a2a1a" roughness={0.9} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.85}
+            metalness={0.1}
+          />
         </mesh>
       </RigidBody>
 
-      {/* Murs */}
+      {/* Murs texturés */}
       <RigidBody type="fixed" position={[0, 1.5, -9]}>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[12, 3, 0.5]} />
-          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.9}
+            metalness={0.12}
+          />
         </mesh>
       </RigidBody>
       <RigidBody type="fixed" position={[0, 1.5, 3]}>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[12, 3, 0.5]} />
-          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.9}
+            metalness={0.12}
+          />
         </mesh>
       </RigidBody>
       <RigidBody type="fixed" position={[-6, 1.5, -3]}>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[0.5, 3, 12]} />
-          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.9}
+            metalness={0.12}
+          />
         </mesh>
       </RigidBody>
       <RigidBody type="fixed" position={[6, 1.5, -3]}>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[0.5, 3, 12]} />
-          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.9}
+            metalness={0.12}
+          />
         </mesh>
       </RigidBody>
 
-      {/* Décoration intérieure */}
+      {/* Décoration intérieure (table/banc) */}
       <RigidBody type="fixed" position={[-2, 0.5, -3]}>
         <mesh castShadow>
           <boxGeometry args={[2, 1, 4]} />
-          <meshStandardMaterial color="#5a3a1a" roughness={0.9} />
+          <meshStandardMaterial
+            map={processedTextures.baseColor}
+            normalMap={processedTextures.normalMap}
+            roughnessMap={processedTextures.roughnessMap}
+            metalnessMap={processedTextures.roughnessMap}
+            roughness={0.9}
+            metalness={0.08}
+          />
         </mesh>
       </RigidBody>
 

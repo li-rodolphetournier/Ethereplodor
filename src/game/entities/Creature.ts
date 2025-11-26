@@ -58,5 +58,8 @@ export interface Creature {
   growthRate: 'slow' | 'medium' | 'fast';
   isWild: boolean;
   originalTrainer?: string;
+
+  // Position dans le monde 3D (pour les créatures sauvages)
+  position?: THREE.Vector3;
 }
 

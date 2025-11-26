@@ -128,10 +128,8 @@ export function Environment() {
       <RigidBody type="fixed" position={[0, 0, 0]}>
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[50, 50, 64, 64]} />
-          <meshStandardMaterial
+          <meshToonMaterial
             color="#26221b"
-            roughness={0.98}
-            metalness={0.02}
             emissive="#100c08"
             emissiveIntensity={0.08}
           />
@@ -144,10 +142,8 @@ export function Environment() {
       <RigidBody type="fixed" position={[0, -0.05, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[8, 50, 16, 32]} />
-          <meshStandardMaterial
+          <meshToonMaterial
             color="#4a7fa8"
-            roughness={0.1}
-            metalness={0.3}
             transparent
             opacity={0.8}
             emissive="#2a4f6a"
@@ -165,10 +161,8 @@ export function Environment() {
         castShadow
       >
         <coneGeometry args={[0.08, 0.25, 6]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color="#4a7c3a"
-          roughness={0.9}
-          metalness={0.1}
         />
       </instancedMesh>
 
@@ -180,10 +174,8 @@ export function Environment() {
         receiveShadow
       >
         <dodecahedronGeometry args={[0.5, 0]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color="#6b6b6b"
-          roughness={0.95}
-          metalness={0.1}
         />
       </instancedMesh>
       
@@ -223,10 +215,8 @@ export function Environment() {
                 receiveShadow
               >
                 <dodecahedronGeometry args={[0.6, 0]} />
-                <meshStandardMaterial
+                <meshToonMaterial
                   color={color}
-                  roughness={0.95}
-                  metalness={0.1}
                 />
               </mesh>
               <BallCollider args={[0.6 * scale]} />
@@ -243,10 +233,8 @@ export function Environment() {
         receiveShadow
       >
         <coneGeometry args={[0.8, 2.2, 8]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color="#3a7a2a"
-          roughness={0.9}
-          metalness={0.1}
         />
       </instancedMesh>
 
@@ -258,10 +246,8 @@ export function Environment() {
         receiveShadow
       >
         <cylinderGeometry args={[0.18, 0.18, 1.2, 8]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color="#6b4a2a"
-          roughness={0.9}
-          metalness={0.1}
         />
       </instancedMesh>
       
@@ -280,10 +266,8 @@ export function Environment() {
         receiveShadow
       >
         <boxGeometry args={[0.4, 0.6, 0.1]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color="#2d2d2d"
-          roughness={0.9}
-          metalness={0.1}
         />
       </instancedMesh>
       
@@ -316,9 +300,8 @@ export function Environment() {
                 receiveShadow
               >
                 <dodecahedronGeometry args={[0.3, 0]} />
-                <meshStandardMaterial
+                <meshToonMaterial
                   color={color}
-                  roughness={0.95}
                 />
               </mesh>
               <BallCollider args={[0.3 * scale]} />
@@ -344,7 +327,7 @@ export function Environment() {
             >
               <mesh castShadow>
                 <sphereGeometry args={[0.05, 8, 8]} />
-                <meshStandardMaterial
+                <meshToonMaterial
                   color={color}
                   emissive={color}
                   emissiveIntensity={0.5}

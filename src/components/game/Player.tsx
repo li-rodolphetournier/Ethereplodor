@@ -10,6 +10,8 @@ import { combatSystem } from '@/game/systems/CombatSystem';
 import { showDamageNumber } from '@/components/effects/DamageNumberManager';
 import { useLevelStore } from '@/stores/levelStore';
 import { Labubu } from './Labubu';
+import { questSystem } from '@/game/systems/QuestSystem';
+import { useQuestStore } from '@/stores/questStore';
 
 const tempVecA = new THREE.Vector3();
 const tempVecB = new THREE.Vector3();
@@ -17,7 +19,7 @@ const tempVecB = new THREE.Vector3();
 export function Player() {
   const playerRef = useRef<RapierRigidBody>(null);
   const meshRef = useRef<THREE.Group>(null);
-  const bodyRef = useRef<THREE.Object3D>(null);
+  const bodyRef = useRef<THREE.Group>(null);
   const lastAttackTimeRef = useRef(0);
   const { setPosition, setRotation, setIsMoving, setAnimationState, speed } = usePlayerStore();
   const equippedWeapon = useInventoryStore((state) => state.equippedWeapon);
@@ -138,8 +140,9 @@ export function Player() {
 
             if (newHp <= 0) {
               console.log(`Enemy ${enemy.id} vaincu!`);
-              // TODO: Mettre à jour la progression des quêtes
-              // questSystem.onEnemyKilled();
+              questSystem.onEnemyKilled();
+              // Rafraîchir l'UI des quêtes
+              useQuestStore.getState().refreshQuests();
             }
           }
         });

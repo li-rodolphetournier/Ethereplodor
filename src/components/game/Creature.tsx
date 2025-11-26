@@ -60,10 +60,8 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
           {/* Corps principal - sombre */}
           <mesh ref={bodyRef} castShadow>
             <icosahedronGeometry args={[0.4, 1]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color={typeColor}
-              metalness={0.2}
-              roughness={0.85}
               emissive={typeColor}
               emissiveIntensity={0.15}
             />
@@ -72,7 +70,7 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
           {/* Yeux lumineux */}
           <mesh castShadow position={[0.15, 0.1, 0.35]}>
             <sphereGeometry args={[0.08, 8, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#ffffff"
               emissive="#ffffff"
               emissiveIntensity={0.3}
@@ -80,7 +78,7 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
           </mesh>
           <mesh castShadow position={[-0.15, 0.1, 0.35]}>
             <sphereGeometry args={[0.08, 8, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#ffffff"
               emissive="#ffffff"
               emissiveIntensity={0.3}
@@ -88,11 +86,11 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
           </mesh>
           <mesh castShadow position={[0.15, 0.1, 0.4]}>
             <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
+            <meshToonMaterial color="#000000" />
           </mesh>
           <mesh castShadow position={[-0.15, 0.1, 0.4]}>
             <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
+            <meshToonMaterial color="#000000" />
           </mesh>
 
           {/* Ailes pour Flying - sombres */}
@@ -100,20 +98,18 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
             <>
               <mesh castShadow position={[0.3, 0.2, 0]} rotation={[0, 0, 0.5]}>
                 <coneGeometry args={[0.15, 0.4, 8]} />
-                <meshStandardMaterial
+                <meshToonMaterial
                   color={typeColor}
                   transparent
                   opacity={0.6}
-                  roughness={0.8}
                 />
               </mesh>
               <mesh castShadow position={[-0.3, 0.2, 0]} rotation={[0, 0, -0.5]}>
                 <coneGeometry args={[0.15, 0.4, 8]} />
-                <meshStandardMaterial
+                <meshToonMaterial
                   color={typeColor}
                   transparent
                   opacity={0.6}
-                  roughness={0.8}
                 />
               </mesh>
             </>
@@ -123,7 +119,7 @@ export function Creature({ creature, position, isWild = true }: CreatureProps) {
           {creature.type === CreatureType.FIRE && (
             <mesh position={[0, -0.3, 0]}>
               <coneGeometry args={[0.2, 0.3, 8]} />
-              <meshStandardMaterial
+              <meshToonMaterial
                 color="#5a1a00"
                 emissive="#8b0000"
                 emissiveIntensity={0.5}

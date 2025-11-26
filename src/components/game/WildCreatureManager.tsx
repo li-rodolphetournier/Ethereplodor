@@ -2,12 +2,14 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { wildCreatureSpawn } from '@/game/systems/WildCreatureSpawn';
+import { Creature as CreatureData } from '@/game/entities/Creature';
 import { Creature } from './Creature';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useCreatureStore } from '@/stores/creatureStore';
 import { captureSystem } from '@/game/systems/CaptureSystem';
 import { showNotification } from '@/components/ui/Notification';
 import { questSystem } from '@/game/systems/QuestSystem';
+import { useQuestStore } from '@/stores/questStore';
 
 export function WildCreatureManager() {
   const playerPosition = usePlayerStore((state) => state.position);
@@ -34,28 +36,31 @@ export function WildCreatureManager() {
       const playerPos = playerPosition;
 
       // Trouver la créature la plus proche
-      let closestCreature: { creature: typeof wildCreatures[0]; distance: number } | null = null;
+      let closestCreature: CreatureData | null = null;
+      let closestDistance = Infinity;
 
-      wildCreatures.forEach((creature) => {
+      for (const creature of wildCreatures) {
         const creaturePos = creature.position || new THREE.Vector3(0, 0, 0);
         const distance = playerPos.distanceTo(creaturePos);
 
-        if (distance < 3 && (!closestCreature || distance < closestCreature.distance)) {
-          closestCreature = { creature, distance };
+        if (distance < 3 && distance < closestDistance) {
+          closestCreature = creature;
+          closestDistance = distance;
         }
-      });
+      }
 
       if (closestCreature) {
-        const result = captureSystem.attemptCapture(closestCreature.creature, 'basic');
+        const result = captureSystem.attemptCapture(closestCreature, 'basic');
 
         if (result.success) {
-          showNotification(`🎉 Capture réussie! ${closestCreature.creature.name} a été capturé!`, 'success');
-          captureCreature(closestCreature.creature);
-          wildCreatureSpawn.removeWildCreature(closestCreature.creature.id);
+          showNotification(`🎉 Capture réussie! ${closestCreature.name} a été capturé!`, 'success');
+          captureCreature(closestCreature);
+          wildCreatureSpawn.removeWildCreature(closestCreature.id);
           // Mettre à jour la progression des quêtes
           questSystem.onCreatureCaptured();
+          useQuestStore.getState().refreshQuests();
         } else {
-          showNotification(`❌ Capture échouée! ${closestCreature.creature.name} s'est échappé!`, 'error');
+          showNotification(`❌ Capture échouée! ${closestCreature.name} s'est échappé!`, 'error');
         }
       } else {
         console.log('Aucune créature sauvage à proximité');

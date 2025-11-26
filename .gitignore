@@ -7,9 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build outputs
 dist
 dist-ssr
+build
 *.local
 
 # Editor directories and files
@@ -22,9 +28,102 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+*~
 
 # Environment variables
 .env
 .env.local
 .env.production
+.env.*.local
+
+# OS files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Cache and temporary files
+.cache
+*.tmp
+*.temp
+.temp
+.tmp
+*.cache
+
+# 3D Model files - Sources (volumineux, optionnel à versionner)
+# Les fichiers .gltf et .glb utilisés dans le jeu sont versionnés
+# Les fichiers sources peuvent être ignorés si trop volumineux
+*.blend
+*.blend1
+*.blend2
+*.fbx
+*.obj
+*.max
+*.ma
+*.mb
+*.3ds
+*.dae
+
+# 3D Model files - Generated binaries (générés automatiquement)
+# NOTE: Les fichiers .bin dans public/assets/models/ sont nécessaires pour les modèles GLTF
+# On ignore seulement les .bin en dehors des dossiers de modèles
+# *.bin (commenté car nécessaire pour GLTF)
+# *.gltf.bin (commenté car nécessaire pour GLTF)
+
+# Textures sources non utilisées (garder celles dans public/assets/models/textures/)
+# *.psd
+# *.xcf
+# *.kra
+
+# Audio sources non utilisées
+# *.wav
+# *.aiff
+# Garder les .mp3, .ogg utilisés dans le jeu
+
+# Database files (si utilisé localement)
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+.nyc_output
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache
+.parcel-cache
+
+# Next.js (si utilisé plus tard)
+.next
+out
+
+# Nuxt.js (si utilisé plus tard)
+.nuxt
+
+# Vite
+.vite
 

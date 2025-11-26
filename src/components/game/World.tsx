@@ -30,6 +30,56 @@ function FogComponent() {
   return null;
 }
 
+// Créer un gradient map global pour le cell shading
+function createGradientMap(): THREE.Texture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 1;
+  const context = canvas.getContext('2d')!;
+  const gradient = context.createLinearGradient(0, 0, 256, 0);
+  // Créer un gradient avec des bandes nettes pour le cell shading
+  gradient.addColorStop(0, '#000000'); // Ombre foncée
+  gradient.addColorStop(0.4, '#000000'); // Ombre foncée
+  gradient.addColorStop(0.41, '#404040'); // Transition nette
+  gradient.addColorStop(0.6, '#808080'); // Ombre moyenne
+  gradient.addColorStop(0.61, '#c0c0c0'); // Transition nette
+  gradient.addColorStop(0.8, '#e0e0e0'); // Lumière moyenne
+  gradient.addColorStop(0.81, '#ffffff'); // Transition nette
+  gradient.addColorStop(1, '#ffffff'); // Lumière
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 256, 1);
+  const texture = new THREE.Texture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
+// Composant pour configurer le gradient map global pour tous les MeshToonMaterial
+function ToonGradientSetup() {
+  const { scene } = useThree();
+  
+  useEffect(() => {
+    const gradientMap = createGradientMap();
+    
+    // Appliquer le gradient map à tous les MeshToonMaterial de la scène
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (!Array.isArray(mesh.material) && (mesh.material as THREE.MeshToonMaterial).isMeshToonMaterial) {
+          (mesh.material as THREE.MeshToonMaterial).gradientMap = gradientMap;
+        } else if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((mat) => {
+            if ((mat as THREE.MeshToonMaterial).isMeshToonMaterial) {
+              (mat as THREE.MeshToonMaterial).gradientMap = gradientMap;
+            }
+          });
+        }
+      }
+    });
+  }, [scene]);
+  
+  return null;
+}
+
 export function World() {
   const playerPosition = usePlayerStore((state) => state.position);
   const currentLevel = useLevelStore((state) => state.currentLevel);
@@ -82,6 +132,7 @@ export function World() {
       <pointLight position={[10, 2, 10]} intensity={0.3} color="#ff4500" distance={20} decay={2} />
 
       <FogComponent />
+      <ToonGradientSetup />
 
       {/* Ciel désactivé pour garder un fond sombre contrôlé par le clearColor */}
 
@@ -103,7 +154,8 @@ export function World() {
 
       <IsometricCamera target={playerPosition} distance={15} />
 
-      <DreiEnvironment preset="night" />
+      {/* Environnement désactivé pour éviter le chargement HDR trop lourd */}
+      {/* <DreiEnvironment preset="night" /> */}
       <DamageNumberManager />
     </Canvas>
   );

@@ -156,10 +156,8 @@ export function Enemy({ enemy }: EnemyProps) {
           {/* Corps principal - plus visible */}
           <mesh ref={bodyRef} castShadow>
             <octahedronGeometry args={[0.5, 0]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color={enemyColor}
-              metalness={0.4}
-              roughness={0.7}
               emissive={enemyColor}
               emissiveIntensity={0.4}
             />
@@ -171,7 +169,7 @@ export function Enemy({ enemy }: EnemyProps) {
           {/* Yeux rouges menaçants */}
           <mesh castShadow position={[0.2, 0.1, 0.4]}>
             <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#ff0000"
               emissive="#ff4444"
               emissiveIntensity={1.2}
@@ -179,7 +177,7 @@ export function Enemy({ enemy }: EnemyProps) {
           </mesh>
           <mesh castShadow position={[-0.2, 0.1, 0.4]}>
             <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#ff0000"
               emissive="#ff4444"
               emissiveIntensity={1.2}
@@ -189,23 +187,20 @@ export function Enemy({ enemy }: EnemyProps) {
           {/* Cornes/épines sombres */}
           <mesh castShadow position={[0, 0.6, 0]}>
             <coneGeometry args={[0.1, 0.3, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#1a1a1a"
-              roughness={0.9}
             />
           </mesh>
           <mesh castShadow position={[0.15, 0.5, 0]}>
             <coneGeometry args={[0.08, 0.2, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#1a1a1a"
-              roughness={0.9}
             />
           </mesh>
           <mesh castShadow position={[-0.15, 0.5, 0]}>
             <coneGeometry args={[0.08, 0.2, 8]} />
-            <meshStandardMaterial
+            <meshToonMaterial
               color="#1a1a1a"
-              roughness={0.9}
             />
           </mesh>
 
